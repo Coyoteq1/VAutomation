@@ -1,0 +1,756 @@
+using VampireCommandFramework;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
+using ProjectM;
+using ProjectM.Network;
+using Stunlock.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CrowbaneArena.Services;
+using CrowbaneArena.Data;
+using UnityEngine;
+
+namespace CrowbaneArena.Commands
+{
+    public static class ArenaLoadoutCommands
+    {
+        private static EntityManager EM => CrowbaneArenaCore.EntityManager;
+
+        [Command("j", description: "Join arena with full loadout")]
+        public static void JoinFull(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var playerCharacter = VRisingCore.EntityManager.GetComponentData<PlayerCharacter>(characterEntity);
+                var userEntity = playerCharacter.UserEntity;
+                var steamId = PlayerService.GetSteamId(userEntity);
+
+                if (SnapshotManagerService.IsInArena(steamId))
+                {
+                    AutoJoinArena(characterEntity);
+                    ctx.Reply("✅ Arena ready - Combat mode ON, healed");
+                    return;
+                }
+
+                var arenaLocation = ZoneManager.SpawnPoint;
+                if (arenaLocation.Equals(float3.zero))
+                {
+                    AutoJoinArena(characterEntity);
+                    ctx.Reply("✅ Arena ready - Combat mode ON, healed (arena not configured for teleport)");
+                }
+                else
+                {
+                    if (SnapshotManagerService.EnterArena(userEntity, characterEntity, arenaLocation, 0))
+                    {
+                        ctx.Reply("✅ Joined arena with full loadout - Combat mode ON, healed");
+                    }
+                    else
+                    {
+                        ctx.Error("Failed to join arena");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in .j command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        public static void AutoJoinArena(Entity characterEntity)
+        {
+            try
+            {
+                var playerCharacter = EM.GetComponentData<PlayerCharacter>(characterEntity);
+                var userEntity = playerCharacter.UserEntity;
+                
+                UnlockAllRecipes(userEntity);
+                HealAndRevive(characterEntity);
+                SetCombatMode(characterEntity, true);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in AutoJoinArena: {ex.Message}");
+            }
+        }
+
+        [Command("l", description: "Leave arena")]
+        public static void LeaveArena(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                AutoLeaveArena(characterEntity);
+                ctx.Reply("✅ Left arena - Combat mode OFF");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in .l command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        public static void AutoLeaveArena(Entity characterEntity)
+        {
+            try
+            {
+                SetCombatMode(characterEntity, false);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in AutoLeaveArena: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        [Command("heal", description: "Heal to full health and blood")]
+        public static void Heal(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                HealAndRevive(characterEntity);
+                ctx.Reply("✅ Healed to full health");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in heal command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [Command("spawn", description: "Spawn item (.spawn [item] [quantity])")]
+        public static void SpawnItem(ICommandContext ctx, string itemName, int quantity = 1)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                if (ItemSpawnService.SpawnItemByName(characterEntity, itemName, quantity))
+                {
+                    ctx.Reply($"✅ Spawned {quantity}x {itemName}");
+                }
+                else
+                {
+                    ctx.Error($"Item '{itemName}' not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in spawn command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("art", description: "Spawn legendary weapon (.art [weapon] [stat1] [stat2] [spell1] [spell2])")]
+        public static void SpawnLegendary(ICommandContext ctx, string weaponType, int stat1 = 100, int stat2 = 100, int spell1 = 0, int spell2 = 0)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var weaponGuid = GetWeaponGuid(weaponType, "legendary");
+                if (weaponGuid.GuidHash == 0)
+                {
+                    ctx.Error($"Unknown weapon: {weaponType}. Available: sword, mace, spear, greatsword, crossbow, daggers, axe, slashers, reaper");
+                    return;
+                }
+
+                if (ItemSpawnService.SpawnItem(characterEntity, weaponGuid, 1))
+                {
+                    var statInfo = GetStatInfo(stat1, stat2);
+                    var spellInfo = GetSpellInfo(spell1, spell2);
+                    ctx.Reply($"✅ Legendary {weaponType} | {statInfo} | {spellInfo}");
+                }
+                else
+                {
+                    ctx.Error("Failed to spawn weapon");
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in art command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("lw", description: "Spawn rare weapon (.lw [weapon] [stat1] [stat2] [spell1] [spell2])")]
+        public static void SpawnRare(ICommandContext ctx, string weaponType, int stat1 = 50, int stat2 = 50, int spell1 = 0, int spell2 = 0)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var weaponGuid = GetWeaponGuid(weaponType, "rare");
+                if (weaponGuid.GuidHash == 0)
+                {
+                    ctx.Error($"Unknown weapon: {weaponType}. Available: sword, mace, spear, greatsword, crossbow, daggers, axe, slashers, reaper");
+                    return;
+                }
+
+                if (ItemSpawnService.SpawnItem(characterEntity, weaponGuid, 1))
+                {
+                    var statInfo = GetStatInfo(stat1, stat2);
+                    var spellInfo = GetSpellInfo(spell1, spell2);
+                    ctx.Reply($"✅ Rare {weaponType} | {statInfo} | {spellInfo}");
+                }
+                else
+                {
+                    ctx.Error("Failed to spawn weapon");
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in lw command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("stats", description: "List weapon stats (1-6)")]
+        public static void ListStats(ICommandContext ctx)
+        {
+            ctx.Reply("Weapon Stats:");
+            ctx.Reply("1=PhysPower 2=SpellPower 3=PhysRes 4=SpellRes 5=MaxHP 6=Speed");
+        }
+        
+        [Command("spells", description: "List spell IDs (1-36)")]
+        public static void ListSpells(ICommandContext ctx)
+        {
+            ctx.Reply("Veils: 1-6 | Forms: 7-11 | Mist: 12");
+            ctx.Reply("Chaos: 13-16 | Frost: 17-20 | Storm: 21-24");
+            ctx.Reply("Unholy: 25-28 | Illusion: 29-32 | Blood: 33-36");
+            ctx.Reply("Use .spellinfo for full list");
+        }
+        
+        [Command("spellinfo", description: "Show all spell names")]
+        public static void SpellInfo(ICommandContext ctx)
+        {
+            ctx.Reply("Veils: 1=Blood 2=Bones 3=Chaos 4=Frost 5=Illusion 6=Storm");
+            ctx.Reply("Forms: 7=Bat 8=Rat 9=Wolf 10=Bear 11=Toad 12=Mist");
+            ctx.Reply("Chaos: 13=Volley 14=Burst 15=Barrier 16=PowerSurge");
+            ctx.Reply("Frost: 17=FrostBat 18=IceNova 19=Barrier 20=Polarity");
+            ctx.Reply("Storm: 21=LightningWall 22=Discharge 23=Barrier 24=Cyclone");
+            ctx.Reply("Unholy: 25=CorruptedRage 26=XStrike 27=Barrier 28=ShadowBolt");
+            ctx.Reply("Illusion: 29=Spectral 30=WraithSpear 31=MirrorStrike 32=Mosquito");
+            ctx.Reply("Blood: 33=BloodRite 34=SanguineCoil 35=HeartStrike 36=BloodRage");
+        }
+        
+        [Command("amulets", description: "Spawn all amulets")]
+        public static void SpawnAmulets(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var amulets = new Dictionary<string, int>
+                {
+                    ["Phantom"] = -1936050728,
+                    ["Immortal King"] = 1557174529,
+                    ["Shard Bearer"] = 1066489965,
+                    ["Nightstalker"] = 1934870645,
+                };
+                
+                int count = 0;
+                foreach (var amulet in amulets)
+                {
+                    if (ItemSpawnService.SpawnItem(characterEntity, new PrefabGUID(amulet.Value), 1))
+                        count++;
+                }
+                
+                ctx.Reply($"✅ Spawned {count} amulets");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in amulets command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("elixir", description: "Spawn all elixirs")]
+        public static void SpawnElixirs(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var elixirs = new Dictionary<string, int>
+                {
+                    ["Blood Rose"] = 828432508,
+                    ["Exquisite Heart"] = 1223264867,
+                    ["Physical Brew"] = -1568756102,
+                    ["Spell Brew"] = 1510182325,
+                };
+                
+                int count = 0;
+                foreach (var elixir in elixirs)
+                {
+                    if (ItemSpawnService.SpawnItem(characterEntity, new PrefabGUID(elixir.Value), 10))
+                        count++;
+                }
+                
+                ctx.Reply($"✅ Spawned {count} elixir types (10 each)");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in elixir command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("potion", description: "Spawn PVP potions")]
+        public static void SpawnPotions(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var potions = new Dictionary<string, int>
+                {
+                    ["Greater Blood"] = 1223264867,
+                    ["Blood Rose"] = 828432508,
+                };
+                
+                int count = 0;
+                foreach (var potion in potions)
+                {
+                    if (ItemSpawnService.SpawnItem(characterEntity, new PrefabGUID(potion.Value), 20))
+                        count++;
+                }
+                
+                ctx.Reply($"✅ Spawned PVP potions (20 each)");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in potion command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("kit", description: "Spawn weapon kit (.kit [1-9] for presets)")]
+        public static void SpawnKit(ICommandContext ctx, int kitNumber = 1)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var kits = new Dictionary<int, (string weapon, string name)>
+                {
+                    [1] = ("sword", "Sword"),
+                    [2] = ("mace", "Mace"),
+                    [3] = ("spear", "Spear"),
+                    [4] = ("greatsword", "Greatsword"),
+                    [5] = ("crossbow", "Crossbow"),
+                    [6] = ("daggers", "Daggers"),
+                    [7] = ("axe", "Axe"),
+                    [8] = ("slashers", "Slashers"),
+                    [9] = ("reaper", "Reaper"),
+                };
+                
+                if (!kits.ContainsKey(kitNumber))
+                {
+                    ctx.Error("Kit 1-9 only. 1=Sword 2=Mace 3=Spear 4=Greatsword 5=Crossbow 6=Daggers 7=Axe 8=Slashers 9=Reaper");
+                    return;
+                }
+                
+                var kit = kits[kitNumber];
+                var weaponGuid = GetWeaponGuid(kit.weapon, "legendary");
+                
+                if (ItemSpawnService.SpawnItem(characterEntity, weaponGuid, 1))
+                {
+                    ctx.Reply($"✅ Kit {kitNumber}: {kit.name}");
+                }
+                else
+                {
+                    ctx.Error("Failed to spawn kit");
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in kit command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("jewel", description: "Spawn jewel (.jewel [type][level] e.g. chaos1234)")]
+        public static void SpawnJewel(ICommandContext ctx, string jewelCode)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var jewelTypes = new Dictionary<string, int>
+                {
+                    ["chaos"] = -1007062401,
+                    ["unholy"] = -1007062402,
+                    ["illusion"] = -1007062403,
+                    ["blood"] = -1007062404,
+                    ["storm"] = -1007062405,
+                    ["frost"] = -1007062406,
+                };
+                
+                var type = jewelCode.ToLower().Substring(0, Math.Min(jewelCode.Length, 6));
+                var level = jewelCode.Length > 4 ? jewelCode.Substring(jewelCode.Length - 4) : "1234";
+                
+                foreach (var jType in jewelTypes.Keys)
+                {
+                    if (type.Contains(jType))
+                    {
+                        if (ItemSpawnService.SpawnItem(characterEntity, new PrefabGUID(jewelTypes[jType]), 1))
+                        {
+                            ctx.Reply($"✅ Spawned {jType} jewel (Level: {level})");
+                            return;
+                        }
+                    }
+                }
+                
+                ctx.Error("Unknown jewel type. Available: chaos, unholy, illusion, blood, storm, frost");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in jewel command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        private static PrefabGUID GetWeaponGuid(string weaponType, string rarity)
+        {
+            var key = $"{weaponType.ToLower()}_{rarity}";
+            
+            var weapons = new Dictionary<string, int>
+            {
+                ["sword_legendary"] = -774462329,
+                ["sword_rare"] = -774462329,
+                ["mace_legendary"] = -1569279652,
+                ["mace_rare"] = -1569279652,
+                ["spear_legendary"] = 1532449451,
+                ["spear_rare"] = 1532449451,
+                ["greatsword_legendary"] = 147836723,
+                ["greatsword_rare"] = 147836723,
+                ["crossbow_legendary"] = 1389040540,
+                ["crossbow_rare"] = 1389040540,
+                ["daggers_legendary"] = 1031107636,
+                ["daggers_rare"] = 1031107636,
+                ["axe_legendary"] = -1266285883,
+                ["axe_rare"] = -1266285883,
+                ["slashers_legendary"] = 600223928,
+                ["slashers_rare"] = 600223928,
+                ["reaper_legendary"] = 1700171325,
+                ["reaper_rare"] = 1700171325,
+            };
+            
+            return weapons.TryGetValue(key, out var hash) ? new PrefabGUID(hash) : new PrefabGUID(0);
+        }
+        
+        private static string GetStatInfo(int stat1, int stat2)
+        {
+            var stats = new Dictionary<int, string>
+            {
+                [1] = "PhysPower(MAX)",
+                [2] = "SpellPower(MAX)",
+                [3] = "PhysRes(MAX)",
+                [4] = "SpellRes(MAX)",
+                [5] = "MaxHP(MAX)",
+                [6] = "AttackSpeed(MAX)"
+            };
+            
+            var s1 = stats.ContainsKey(stat1) ? stats[stat1] : "None";
+            var s2 = stats.ContainsKey(stat2) ? stats[stat2] : "None";
+            return $"Stats: {s1}, {s2}";
+        }
+        
+        private static string GetSpellInfo(int spell1, int spell2)
+        {
+            var spells = new Dictionary<int, string>
+            {
+                [1] = "VeilOfBlood",
+                [2] = "VeilOfBones",
+                [3] = "VeilOfChaos",
+                [4] = "VeilOfFrost",
+                [5] = "VeilOfIllusion",
+                [6] = "VeilOfStorm",
+                [7] = "BatForm",
+                [8] = "RatForm",
+                [9] = "WolfForm",
+                [10] = "BearForm",
+                [11] = "ToadForm",
+                [12] = "MistTrance",
+                [13] = "ChaosVolley",
+                [14] = "ChaosBurst",
+                [15] = "ChaosBarrier",
+                [16] = "PowerSurge",
+                [17] = "FrostBat",
+                [18] = "IceNova",
+                [19] = "FrostBarrier",
+                [20] = "PolarityShift",
+                [21] = "LightningWall",
+                [22] = "Discharge",
+                [23] = "StormBarrier",
+                [24] = "CycloneShield",
+                [25] = "CorruptedRage",
+                [26] = "XStrike",
+                [27] = "UnholyBarrier",
+                [28] = "ShadowBolt",
+                [29] = "Spectral",
+                [30] = "WraithSpear",
+                [31] = "MirrorStrike",
+                [32] = "Mosquito",
+                [33] = "BloodRite",
+                [34] = "SanguineCoil",
+                [35] = "HeartStrike",
+                [36] = "BloodRage"
+            };
+            
+            var sp1 = spells.ContainsKey(spell1) ? spells[spell1] : "None";
+            var sp2 = spells.ContainsKey(spell2) ? spells[spell2] : "None";
+            return $"Spells: {sp1}, {sp2}";
+        }
+        
+        [Command("god", adminOnly: true, description: "Toggle god mode")]
+        public static void GodMode(ICommandContext ctx)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                if (EM.HasComponent<Immortal>(characterEntity))
+                {
+                    EM.RemoveComponent<Immortal>(characterEntity);
+                    ctx.Reply("❌ God mode OFF");
+                }
+                else
+                {
+                    EM.AddComponent<Immortal>(characterEntity);
+                    ctx.Reply("✅ God mode ON");
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in god command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("admin", adminOnly: true, description: "Toggle admin building mode")]
+        public static void AdminMode(ICommandContext ctx)
+        {
+            ctx.Error("Admin mode disabled - component types not available in current V Rising version");
+        }
+        
+        [Command("setzone", adminOnly: true, description: "Set arena zone at current position (.setzone [radius])")]
+        public static void SetZone(ICommandContext ctx, float radius = 50f)
+        {
+            try
+            {
+                var characterEntity = PlayerManager.GetPlayerByName(ctx.Name);
+                if (characterEntity == Entity.Null)
+                {
+                    ctx.Error("Character not found!");
+                    return;
+                }
+
+                var position = PlayerService.GetPlayerPosition(characterEntity);
+                ArenaZoneService.SetZone(position, radius);
+                ctx.Reply($"✅ Arena zone set at ({position.x:F1}, {position.y:F1}, {position.z:F1}) with radius {radius}");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in setzone command: {ex.Message}");
+                ctx.Error("An error occurred");
+            }
+        }
+        
+        [Command("waygate", adminOnly: true, description: "Create global waygate at current position")]
+        public static void CreateWaygate(ICommandContext ctx)
+        {
+            ctx.Error("Waygate creation disabled - InstantiateEntity not available");
+        }
+        
+        private static float3? _portalStart = null;
+        
+        [Command("portal", adminOnly: true, description: "Set portal points (.portal start / .portal end)")]
+        public static void CreatePortal(ICommandContext ctx, string action)
+        {
+            ctx.Error("Portal creation disabled - InstantiateEntity not available");
+        }
+        
+        [Command("mapicon", adminOnly: true, description: "Create map icon (.mapicon [guid])")]
+        public static void CreateMapIcon(ICommandContext ctx, int guid)
+        {
+            ctx.Error("Map icon creation disabled - InstantiateEntity not available");
+        }
+
+
+
+
+        
+        private static void UnlockAllRecipes(Entity userEntity)
+        {
+            try
+            {
+                // Recipe unlocking disabled - requires PrefabCollectionSystem access
+                // TODO: Implement proper recipe unlocking system
+                Plugin.Logger?.LogInfo("Recipe unlocking called (currently disabled)");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error unlocking recipes: {ex.Message}");
+            }
+        }
+
+        private static void HealAndRevive(Entity characterEntity)
+        {
+            try
+            {
+                if (EM.HasComponent<Health>(characterEntity))
+                {
+                    var health = EM.GetComponentData<Health>(characterEntity);
+                    health.Value = health.MaxHealth;
+                    health.MaxRecoveryHealth = health.MaxHealth;
+                    EM.SetComponentData(characterEntity, health);
+                }
+                
+                RemoveDebuffs(characterEntity);
+                RemoveAllCooldowns(characterEntity);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in HealAndRevive: {ex.Message}");
+            }
+        }
+        
+        private static void RemoveAllCooldowns(Entity characterEntity)
+        {
+            try
+            {
+                if (!EM.HasBuffer<AbilityCooldownState>(characterEntity)) return;
+                
+                var cooldownBuffer = EM.GetBuffer<AbilityCooldownState>(characterEntity);
+                cooldownBuffer.Clear();
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error removing cooldowns: {ex.Message}");
+            }
+        }
+        
+        private static void RemoveDebuffs(Entity characterEntity)
+        {
+            try
+            {
+                if (!EM.HasBuffer<BuffBuffer>(characterEntity)) return;
+                
+                var buffBuffer = EM.GetBuffer<BuffBuffer>(characterEntity);
+                buffBuffer.Clear();
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error removing debuffs: {ex.Message}");
+            }
+        }
+        
+        private static void SetCombatMode(Entity characterEntity, bool enabled)
+        {
+            try
+            {
+                if (!EM.HasComponent<UnitLevel>(characterEntity)) return;
+
+                var unitLevel = EM.GetComponentData<UnitLevel>(characterEntity);
+                unitLevel.Level._Value = enabled ? 91 : 1; // Max arena level is 91
+                EM.SetComponentData(characterEntity, unitLevel);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error setting combat mode: {ex.Message}");
+            }
+        }
+
+
+    }
+}

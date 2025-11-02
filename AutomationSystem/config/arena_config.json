@@ -1,0 +1,767 @@
+{
+  "ArenaEnabled": true,
+  "ExtractedGuids": {
+    "SpellSchools": [
+      { "Name": "Storm", "Prefix": "s", "Guid": 419215380 },
+      { "Name": "Chaos", "Prefix": "c", "Guid": -1706926836 },
+      { "Name": "Frost", "Prefix": "f", "Guid": 2110406288 },
+      { "Name": "Unholy", "Prefix": "u", "Guid": 1293762372 },
+      { "Name": "Blood", "Prefix": "b", "Guid": -1007451621 },
+      { "Name": "Illusion", "Prefix": "i", "Guid": -1063090297 }
+    ],
+    "StatMods": [
+      { "Name": "Movement Speed", "Number": 1, "Guid": -285192213 },
+      { "Name": "Attack Speed", "Number": 2, "Guid": -542568600 },
+      { "Name": "Spell Power", "Number": 3, "Guid": 1705753146 },
+      { "Name": "Physical Power", "Number": 4, "Guid": -1917650844 }
+    ],
+    "BloodTypes": [
+      { "Name": "Warrior", "Guid": -516976528 },
+      { "Name": "Rogue", "Guid": -1620185637 },
+      { "Name": "Brute", "Guid": 804798592 },
+      { "Name": "Scholar", "Guid": 1476452791 },
+      { "Name": "Creature", "Guid": 524822543 },
+      { "Name": "Mixed", "Guid": -1 }
+    ],
+    "Weapons": [
+      {
+        "Name": "sword",
+        "Description": "Sanguine Sword",
+        "Guid": -774462329,
+        "status": [
+          { "ModCombo": "anc", "VariantGuid": 2106567892, "FriendlyName": "Ancestor's Sword" }
+        ],
+        "spell": "bloodmend"
+      },
+      {
+        "Name": "axe",
+        "Description": "Sanguine Axe",
+        "Guid": -2044057823,
+        "status": [],
+        "spell": "rage"
+      },
+      {
+        "Name": "mace",
+        "Description": "Sanguine Mace",
+        "Guid": -1569279652,
+        "status": [],
+        "spell": "stone"
+      },
+      {
+        "Name": "spear",
+        "Description": "Sanguine Spear",
+        "Guid": 1532449451,
+        "status": [],
+        "spell": "frost"
+      },
+      {
+        "Name": "greatsword",
+        "Description": "Sanguine Greatsword",
+        "Guid": 147836723,
+        "status": [],
+        "spell": "bear"
+      },
+      {
+        "Name": "crossbow",
+        "Description": "Sanguine Crossbow",
+        "Guid": 1389040540,
+        "status": [],
+        "spell": "teleport"
+      },
+      {
+        "Name": "daggers",
+        "Description": "Sanguine Daggers",
+        "Guid": 1031107636,
+        "status": [],
+        "spell": "bat"
+      },
+      {
+        "Name": "pistols",
+        "Description": "Sanguine Pistols",
+        "Guid": 1651523865,
+        "status": [],
+        "spell": "shapeshift"
+      },
+      {
+        "Name": "reaper",
+        "Description": "Sanguine Reaper",
+        "Guid": -1266262267,
+        "status": [],
+        "spell": "bloodmend"
+      },
+      {
+        "Name": "slashers",
+        "Description": "Sanguine Slashers",
+        "Guid": 600395942,
+        "status": [],
+        "spell": "rage"
+      }
+    ],
+    "ArmorSets": [
+      {
+        "Name": "warrior",
+        "Description": "Dracula's Warrior Set",
+        "BootsGuid": -382349289,
+        "GlovesGuid": 1982551454,
+        "ChestGuid": 1392314162,
+        "LegsGuid": 205207385,
+        "status": [],
+        "spell": "rage"
+      },
+      {
+        "Name": "rogue",
+        "Description": "Dracula's Rogue Set",
+        "BootsGuid": 1855323424,
+        "GlovesGuid": -1826382550,
+        "ChestGuid": 933057100,
+        "LegsGuid": -345596442,
+        "status": [],
+        "spell": "bat"
+      },
+      {
+        "Name": "scholar",
+        "Description": "Dracula's Scholar Set",
+        "BootsGuid": 1531721602,
+        "GlovesGuid": -1899539896,
+        "ChestGuid": 114259912,
+        "LegsGuid": 1592149279,
+        "status": [],
+        "spell": "frost"
+      },
+      {
+        "Name": "brute",
+        "Description": "Dracula's Brute Set",
+        "BootsGuid": 1646489863,
+        "GlovesGuid": 1039083725,
+        "ChestGuid": 1033753207,
+        "LegsGuid": 993033515,
+        "status": [],
+        "spell": "stone"
+      }
+    ],
+    "Consumables": [
+      { "Name": "blood_rose_potion", "Guid": 828432508, "DefaultAmount": 10 },
+      { "Name": "exquisite_brew", "Guid": 1223264867, "DefaultAmount": 5 },
+      { "Name": "physical_brew", "Guid": -1568756102, "DefaultAmount": 3 },
+      { "Name": "spell_brew", "Guid": 1510182325, "DefaultAmount": 3 }
+    ],
+    "Loadouts": [
+      {
+        "Name": "default",
+        "Description": "Default arena loadout for new players",
+        "Weapons": ["sword"],
+        "ArmorSets": ["warrior"],
+        "Consumables": ["blood_rose_potion"]
+      },
+      {
+        "Name": "glass_cannon",
+        "Description": "High damage, low defense",
+        "Weapons": ["daggers", "crossbow"],
+        "ArmorSets": ["scholar"],
+        "Consumables": ["spell_brew", "exquisite_brew"]
+      }
+    ],
+    "Builds": [
+      {
+        "Name": "warrior",
+        "Weapon": "greatsword",
+        "WeaponMods": "c4",
+        "ArmorSet": "warrior",
+        "BloodType": "Warrior"
+      },
+      {
+        "Name": "rogue",
+        "Weapon": "daggers",
+        "WeaponMods": "i2",
+        "ArmorSet": "rogue",
+        "BloodType": "Rogue"
+      },
+      {
+        "Name": "mage",
+        "Weapon": "spear",
+        "WeaponMods": "f3",
+        "ArmorSet": "scholar",
+        "BloodType": "Scholar"
+      },
+      {
+        "Name": "tank",
+        "Weapon": "mace",
+        "WeaponMods": "u1",
+        "ArmorSet": "brute",
+        "BloodType": "Brute"
+      },
+      {
+        "Name": "hybrid",
+        "Weapon": "axe",
+        "WeaponMods": "b3",
+        "ArmorSet": "scholar",
+        "BloodType": "Mixed"
+      }
+    ],
+    "Abilities": [
+      { "Name": "veil_of_blood", "Guid": 1485409614 },
+      { "Name": "sanguine_coil", "Guid": 694245013 }
+    ],
+    "Buffs": [
+      { "Name": "instant_cooldown", "Guid": -999999999, "Notes": "Placeholder. Requires a custom buff with ModifyCooldownRecoveryRate = 100.0" }
+    ],
+    "Emotes": [
+      { "Name": "push_up", "Guid": -914813383 }
+    ]
+  },
+  "Zones": [
+    {
+      "Name": "default",
+      "Description": "Default PvP Arena",
+      "SpawnX": -1000.0,
+      "SpawnY": 0.0,
+      "SpawnZ": -500.0,
+      "Radius": 200.0,
+      "Enabled": false
+    }
+  ],
+  "MaxPlayers": 20,
+  "NoDurabilityLoss": false,
+  "NoBloodLoss": false,
+  "BlockHealingPotions": false,
+  "BlockOPAbilities": true,
+  "PortalX": -1000.0,
+  "PortalY": 0.0,
+  "PortalZ": -500.0,
+  "PortalRadius": 50.0,
+  "Weapons": [
+    {
+      "Name": "sword",
+      "Description": "Sanguine Sword",
+      "Guid": -774462329,
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend",
+      "Default": true
+    },
+    {
+      "Name": "axe",
+      "Description": "Sanguine Axe",
+      "Guid": -2044057823,
+      "Enabled": true,
+      "status": [],
+      "spell": "rage"
+    },
+    {
+      "Name": "mace",
+      "Description": "Sanguine Mace",
+      "Guid": -1569279652,
+      "Enabled": true,
+      "status": [],
+      "spell": "stone"
+    },
+    {
+      "Name": "spear",
+      "Description": "Sanguine Spear",
+      "Guid": 1532449451,
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "greatsword",
+      "Description": "Sanguine Greatsword",
+      "Guid": 147836723,
+      "Enabled": true,
+      "status": [],
+      "spell": "bear"
+    },
+    {
+      "Name": "crossbow",
+      "Description": "Sanguine Crossbow",
+      "Guid": 1389040540,
+      "Enabled": true,
+      "status": [],
+      "spell": "teleport"
+    },
+    {
+      "Name": "daggers",
+      "Description": "Sanguine Daggers",
+      "Guid": 1031107636,
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "pistols",
+      "Description": "Sanguine Pistols",
+      "Guid": 1651523865,
+      "Enabled": true,
+      "status": [],
+      "spell": "shapeshift"
+    },
+    {
+      "Name": "reaper",
+      "Description": "Sanguine Reaper",
+      "Guid": -1266262267,
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "slashers",
+      "Description": "Sanguine Slashers",
+      "Guid": 600395942,
+      "Enabled": true,
+      "status": [],
+      "spell": "rage"
+    }
+  ],
+  "ArmorSets": [
+    {
+      "Name": "warrior",
+      "Description": "Dracula's Warrior Set",
+      "ChestGuid": 1392314162,
+      "LegsGuid": 205207385,
+      "BootsGuid": -382349289,
+      "GlovesGuid": 1982551454,
+      "Enabled": true,
+      "Default": true,
+      "status": [],
+      "spell": "rage"
+    },
+    {
+      "Name": "rogue",
+      "Description": "Dracula's Rogue Set",
+      "ChestGuid": 933057100,
+      "LegsGuid": -345596442,
+      "BootsGuid": 1855323424,
+      "GlovesGuid": -1826382550,
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "scholar",
+      "Description": "Dracula's Scholar Set",
+      "ChestGuid": 114259912,
+      "LegsGuid": 1592149279,
+      "BootsGuid": 1531721602,
+      "GlovesGuid": -1899539896,
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "brute",
+      "Description": "Dracula's Brute Set",
+      "ChestGuid": 1033753207,
+      "LegsGuid": 993033515,
+      "BootsGuid": 1646489863,
+      "GlovesGuid": 1039083725,
+      "Enabled": true,
+      "status": [],
+      "spell": "stone"
+    }
+  ],
+  "Loadouts": [
+    {
+      "Name": "berserker",
+      "Description": "Chaos Greatsword Berserker - High damage melee",
+      "Weapons": ["greatsword"],
+      "WeaponMods": "c4",
+      "ArmorSets": ["warrior"],
+      "BloodType": "Warrior",
+      "Consumables": ["blood_rose_potion", "physical_brew"],
+      "Enabled": true,
+      "Default": true,
+      "status": [],
+      "spell": "bear"
+    },
+    {
+      "Name": "assassin",
+      "Description": "Illusion Daggers Assassin - Fast attack speed",
+      "Weapons": ["daggers"],
+      "WeaponMods": "i2",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "exquisite_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "frost_mage",
+      "Description": "Frost Spear Mage - High spell power",
+      "Weapons": ["spear"],
+      "WeaponMods": "f3",
+      "ArmorSets": ["scholar"],
+      "BloodType": "Scholar",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "tank",
+      "Description": "Unholy Mace Tank - High survivability",
+      "Weapons": ["mace"],
+      "WeaponMods": "u1",
+      "ArmorSets": ["brute"],
+      "BloodType": "Brute",
+      "Consumables": ["blood_rose_potion", "physical_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "stone"
+    },
+    {
+      "Name": "storm_archer",
+      "Description": "Storm Crossbow Archer - Ranged DPS",
+      "Weapons": ["crossbow"],
+      "WeaponMods": "s3",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "teleport"
+    },
+    {
+      "Name": "blood_knight",
+      "Description": "Blood Sword Knight - Balanced melee",
+      "Weapons": ["sword"],
+      "WeaponMods": "b4",
+      "ArmorSets": ["warrior"],
+      "BloodType": "Warrior",
+      "Consumables": ["blood_rose_potion", "physical_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "chaos_slasher",
+      "Description": "Chaos Slashers - Dual wield chaos",
+      "Weapons": ["slashers"],
+      "WeaponMods": "c2",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "exquisite_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "rage"
+    },
+    {
+      "Name": "gunslinger",
+      "Description": "Storm Pistols Gunslinger - Mobile ranged",
+      "Weapons": ["pistols"],
+      "WeaponMods": "s2",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "exquisite_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "shapeshift"
+    },
+    {
+      "Name": "reaper",
+      "Description": "Unholy Reaper - Death magic specialist",
+      "Weapons": ["reaper"],
+      "WeaponMods": "u3",
+      "ArmorSets": ["scholar"],
+      "BloodType": "Scholar",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "berserker_axe",
+      "Description": "Chaos Axe Berserker - Raw physical power",
+      "Weapons": ["axe"],
+      "WeaponMods": "c4",
+      "ArmorSets": ["brute"],
+      "BloodType": "Brute",
+      "Consumables": ["blood_rose_potion", "physical_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "rage"
+    },
+    {
+      "Name": "storm_sword",
+      "Description": "Storm Sword - Lightning fast strikes",
+      "Weapons": ["sword"],
+      "WeaponMods": "s1",
+      "ArmorSets": ["warrior"],
+      "BloodType": "Warrior",
+      "Consumables": ["blood_rose_potion", "exquisite_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "teleport"
+    },
+    {
+      "Name": "frost_axe",
+      "Description": "Frost Axe - Frozen devastation",
+      "Weapons": ["axe"],
+      "WeaponMods": "f4",
+      "ArmorSets": ["brute"],
+      "BloodType": "Brute",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "unholy_daggers",
+      "Description": "Unholy Daggers - Death from shadows",
+      "Weapons": ["daggers"],
+      "WeaponMods": "u2",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "blood_spear",
+      "Description": "Blood Spear - Life drain specialist",
+      "Weapons": ["spear"],
+      "WeaponMods": "b3",
+      "ArmorSets": ["scholar"],
+      "BloodType": "Scholar",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "illusion_mace",
+      "Description": "Illusion Mace - Deceptive tank",
+      "Weapons": ["mace"],
+      "WeaponMods": "i1",
+      "ArmorSets": ["brute"],
+      "BloodType": "Brute",
+      "Consumables": ["blood_rose_potion", "exquisite_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "chaos_crossbow",
+      "Description": "Chaos Crossbow - Explosive ranged",
+      "Weapons": ["crossbow"],
+      "WeaponMods": "c3",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "rage"
+    },
+    {
+      "Name": "frost_pistols",
+      "Description": "Frost Pistols - Ice cold precision",
+      "Weapons": ["pistols"],
+      "WeaponMods": "f2",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "blood_reaper",
+      "Description": "Blood Reaper - Crimson harvest",
+      "Weapons": ["reaper"],
+      "WeaponMods": "b4",
+      "ArmorSets": ["scholar"],
+      "BloodType": "Scholar",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "storm_slashers",
+      "Description": "Storm Slashers - Lightning dual wield",
+      "Weapons": ["slashers"],
+      "WeaponMods": "s4",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "physical_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "teleport"
+    },
+    {
+      "Name": "unholy_greatsword",
+      "Description": "Unholy Greatsword - Death knight",
+      "Weapons": ["greatsword"],
+      "WeaponMods": "u4",
+      "ArmorSets": ["warrior"],
+      "BloodType": "Warrior",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "illusion_spear",
+      "Description": "Illusion Spear - Phantom strikes",
+      "Weapons": ["spear"],
+      "WeaponMods": "i3",
+      "ArmorSets": ["scholar"],
+      "BloodType": "Scholar",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "frost_greatsword",
+      "Description": "Frost Greatsword - Frozen colossus",
+      "Weapons": ["greatsword"],
+      "WeaponMods": "f1",
+      "ArmorSets": ["warrior"],
+      "BloodType": "Warrior",
+      "Consumables": ["blood_rose_potion", "exquisite_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "blood_daggers",
+      "Description": "Blood Daggers - Vampiric assassin",
+      "Weapons": ["daggers"],
+      "WeaponMods": "b2",
+      "ArmorSets": ["rogue"],
+      "BloodType": "Rogue",
+      "Consumables": ["blood_rose_potion", "spell_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    },
+    {
+      "Name": "storm_mace",
+      "Description": "Storm Mace - Thunder crusher",
+      "Weapons": ["mace"],
+      "WeaponMods": "s4",
+      "ArmorSets": ["brute"],
+      "BloodType": "Brute",
+      "Consumables": ["blood_rose_potion", "physical_brew"],
+      "Enabled": true,
+      "status": [],
+      "spell": "teleport"
+    }
+  ],
+  "Consumables": [],
+  "Builds": [
+    {
+      "Name": "warrior",
+      "Description": "Warrior Build - Greatsword with Chaos Physical Power",
+      "Weapon": "greatsword",
+      "WeaponMods": "c4",
+      "ArmorSet": "warrior",
+      "BloodType": "Warrior",
+      "Enabled": true,
+      "status": [],
+      "spell": "bear"
+    },
+    {
+      "Name": "rogue",
+      "Description": "Rogue Build - Daggers with Illusion Attack Speed",
+      "Weapon": "daggers",
+      "WeaponMods": "i2",
+      "ArmorSet": "rogue",
+      "BloodType": "Rogue",
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "mage",
+      "Description": "Mage Build - Spear with Frost Spell Power",
+      "Weapon": "spear",
+      "WeaponMods": "f3",
+      "ArmorSet": "scholar",
+      "BloodType": "Scholar",
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "tank",
+      "Description": "Tank Build - Mace with Unholy Movement Speed",
+      "Weapon": "mace",
+      "WeaponMods": "u1",
+      "ArmorSet": "brute",
+      "BloodType": "Brute",
+      "Enabled": true,
+      "status": [],
+      "spell": "stone"
+    },
+    {
+      "Name": "hybrid",
+      "Description": "Hybrid Build - Axe with Blood Spell Power and Mixed Blood",
+      "Weapon": "axe",
+      "WeaponMods": "b3",
+      "ArmorSet": "scholar",
+      "BloodType": "Mixed",
+      "Enabled": true,
+      "Default": true,
+      "status": [],
+      "spell": "bloodmend"
+    }
+  ],
+  "ArenaEnterPoint": {
+    "x": -500.0,
+    "y": 0.0,
+    "z": -500.0
+  },
+  "ArenaExitPoint": {
+    "x": 600.0,
+    "y": 0.0,
+    "z": 600.0
+  },
+  "BloodTypes": [
+    {
+      "Name": "Warrior",
+      "Guid": -516976528,
+      "Enabled": true,
+      "Default": true,
+      "status": [],
+      "spell": "rage"
+    },
+    {
+      "Name": "Rogue",
+      "Guid": -1620185637,
+      "Enabled": true,
+      "status": [],
+      "spell": "bat"
+    },
+    {
+      "Name": "Brute",
+      "Guid": 804798592,
+      "Enabled": true,
+      "status": [],
+      "spell": "stone"
+    },
+    {
+      "Name": "Scholar",
+      "Guid": 1476452791,
+      "Enabled": true,
+      "status": [],
+      "spell": "frost"
+    },
+    {
+      "Name": "Creature",
+      "Guid": 524822543,
+      "Enabled": true,
+      "status": [],
+      "spell": "bear"
+    },
+    {
+      "Name": "Mixed",
+      "Guid": -1,
+      "Enabled": true,
+      "status": [],
+      "spell": "bloodmend"
+    }
+  ]
+}

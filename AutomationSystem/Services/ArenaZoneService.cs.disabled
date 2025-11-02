@@ -1,0 +1,119 @@
+using Unity.Mathematics;
+using Unity.Transforms;
+using System.Collections.Generic;
+using Unity.Entities;
+using ProjectM;
+using ProjectM.Network;
+
+namespace CrowbaneArena.Services
+{
+    public static class ArenaZoneService
+    {
+        private static float3 _zoneCenter = float3.zero;
+        private static float _zoneRadius = 0f;
+        private static HashSet<ulong> _playersInZone = new();
+        private static EntityManager EM => CrowbaneArenaCore.EntityManager;
+
+        public static void SetZone(float3 center, float radius)
+        {
+            _zoneCenter = center;
+            _zoneRadius = radius;
+            Plugin.Logger?.LogInfo($"Arena zone set at ({center.x:F1}, {center.y:F1}, {center.z:F1}) radius {radius}");
+        }
+
+        public static bool IsInZone(float3 position)
+        {
+            if (_zoneRadius <= 0) return false;
+            var distance = math.distance(position, _zoneCenter);
+            return distance <= _zoneRadius;
+        }
+
+        public static void Update()
+        {
+            try
+            {
+                if (_zoneRadius <= 0) return;
+
+                var query = EM.CreateEntityQuery(ComponentType.ReadOnly<PlayerCharacter>());
+                var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+
+                foreach (var entity in entities)
+                {
+                    if (!EM.Exists(entity)) continue;
+                    
+                    var playerChar = EM.GetComponentData<PlayerCharacter>(entity);
+                    var userEntity = playerChar.UserEntity;
+                    
+                    if (!EM.Exists(userEntity)) continue;
+                    
+                    var user = EM.GetComponentData<User>(userEntity);
+                    var steamId = user.PlatformId;
+                    
+                    if (!EM.HasComponent<Translation>(entity)) continue;
+                    var position = EM.GetComponentData<Translation>(entity).Value;
+
+                    bool isInZone = IsInZone(position);
+                    bool wasInZone = _playersInZone.Contains(steamId);
+
+                    if (isInZone && !wasInZone)
+                    {
+                        _playersInZone.Add(steamId);
+                        Commands.ArenaLoadoutCommands.AutoJoinArena(entity);
+                        AddPVPTag(userEntity);
+                        Plugin.Logger?.LogInfo($"Player {steamId} entered PVP zone");
+                    }
+                    else if (!isInZone && wasInZone)
+                    {
+                        _playersInZone.Remove(steamId);
+                        Commands.ArenaLoadoutCommands.AutoLeaveArena(entity);
+                        RemovePVPTag(userEntity);
+                        Plugin.Logger?.LogInfo($"Player {steamId} left PVP zone");
+                    }
+                }
+
+                entities.Dispose();
+            }
+            catch (System.Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error in ArenaZoneService.Update: {ex.Message}");
+            }
+        }
+        
+        private static void AddPVPTag(Entity userEntity)
+        {
+            try
+            {
+                if (!EM.Exists(userEntity)) return;
+                
+                var user = EM.GetComponentData<User>(userEntity);
+                user.CharacterName = new Unity.Collections.FixedString64Bytes($"<color=#FF0000>{user.CharacterName} [PVP]</color>");
+                EM.SetComponentData(userEntity, user);
+            }
+            catch (System.Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error adding PVP tag: {ex.Message}");
+            }
+        }
+        
+        private static void RemovePVPTag(Entity userEntity)
+        {
+            try
+            {
+                if (!EM.Exists(userEntity)) return;
+                
+                var user = EM.GetComponentData<User>(userEntity);
+                var name = user.CharacterName.ToString();
+                if (name.Contains("[PVP]"))
+                {
+                    name = name.Replace("<color=#FF0000>", "").Replace(" [PVP]</color>", "");
+                    user.CharacterName = new Unity.Collections.FixedString64Bytes(name);
+                    EM.SetComponentData(userEntity, user);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error removing PVP tag: {ex.Message}");
+            }
+        }
+    }
+}

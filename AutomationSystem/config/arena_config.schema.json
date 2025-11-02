@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArenaConfig",
+  "type": "object",
+  "properties": {
+    "ArenaEnabled": { "type": "boolean" },
+    "ExtractedGuids": { "type": "object" },
+    "Zones": { "type": "array" },
+    "MaxPlayers": { "type": "integer" },
+    "Weapons": { "type": "array" },
+    "ArmorSets": { "type": "array" },
+    "Loadouts": { "type": "array" },
+    "Builds": { "type": "array" },
+    "BloodTypes": { "type": "array" }
+  },
+  "required": ["ArenaEnabled", "Zones"]
+}

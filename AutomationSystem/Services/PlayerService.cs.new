@@ -1,0 +1,277 @@
+using ProjectM.Network;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.Collections;
+using Unity.Entities;
+using ProjectM;
+using CrowbaneArena.Models;
+using Unity.Transforms;
+using Unity.Mathematics;
+
+namespace CrowbaneArena.Services;
+
+/// <summary>
+/// Service for player management and queries
+/// Updated for V Rising 1.1+ compatibility
+/// </summary>
+public static class PlayerService
+{
+    private static readonly Dictionary<string, PlayerData> namePlayerCache = new();
+    private static readonly Dictionary<ulong, PlayerData> steamPlayerCache = new();
+    private static readonly Dictionary<NetworkId, PlayerData> idPlayerCache = new();
+    private static bool _isInitialized = false;
+    private static readonly object _initLock = new();
+    private static EntityManager _entityManager;
+
+    private static EntityManager EM
+    {
+        get
+        {
+            if (!_entityManager.World.IsCreated)
+                _entityManager = CrowbaneArenaCore.EntityManager;
+            return _entityManager;
+        }
+    }
+
+    private static void EnsureInitialized()
+    {
+        if (_isInitialized) return;
+        
+        lock (_initLock)
+        {
+            if (_isInitialized) return;
+            
+            try
+            {
+                Plugin.Logger?.LogInfo("Initializing PlayerService cache...");
+                namePlayerCache.Clear();
+                steamPlayerCache.Clear();
+                idPlayerCache.Clear();
+
+                if (!VRisingCore.IsReady())
+                {
+                    Plugin.Logger?.LogWarning("VRisingCore not ready - delaying PlayerService initialization");
+                    return;
+                }
+
+                // Get all user entities
+                var userEntities = EM.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
+                try
+                {
+                    Plugin.Logger?.LogInfo($"Found {userEntities.Length} user entities in world");
+
+                    foreach (var userEntity in userEntities)
+                    {
+                        try
+                        {
+                            if (!EM.HasComponent<User>(userEntity)) continue;
+                            
+                            var userData = EM.GetComponentData<User>(userEntity);
+                            if (userData.LocalCharacter._Entity == Entity.Null) continue;
+                            
+                            var characterEntity = userData.LocalCharacter._Entity;
+                            var character = EM.GetComponentData<NetworkId>(characterEntity);
+                            var playerName = userData.CharacterName.ToString();
+                            var steamId = userData.PlatformId;
+
+                            var playerData = new PlayerData(
+                                playerName,
+                                steamId,
+                                userData.IsConnected,
+                                userEntity,
+                                characterEntity
+                            );
+
+                            var lowerName = playerName.ToLowerInvariant();
+                            namePlayerCache[lowerName] = playerData;
+                            steamPlayerCache[steamId] = playerData;
+                            idPlayerCache[character] = playerData;
+
+                            Plugin.Logger?.LogInfo($"Cached player: {playerName} (SteamID: {steamId}, Entity: {characterEntity})");
+                        }
+                        catch (Exception ex)
+                        {
+                            Plugin.Logger?.LogError($"Error caching player data: {ex.Message}");
+                            Plugin.Logger?.LogError(ex.StackTrace);
+                        }
+                    }
+                }
+                finally
+                {
+                    if (userEntities.IsCreated)
+                        userEntities.Dispose();
+                }
+
+                _isInitialized = true;
+                Plugin.Logger?.LogInfo("PlayerService cache initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"Error initializing PlayerService: {ex.Message}");
+                Plugin.Logger?.LogError(ex.StackTrace);
+            }
+        }
+    }
+
+    internal static void Initialize()
+    {
+        EnsureInitialized();
+    }
+
+    internal static void UpdatePlayerCache(Entity userEntity, string oldName, string newName, bool forceOffline = false)
+    {
+        EnsureInitialized();
+        var userData = EM.GetComponentData<User>(userEntity);
+        
+        // Remove old name (case-insensitive)
+        var oldKey = oldName?.ToLowerInvariant() ?? "";
+        if (!string.IsNullOrEmpty(oldKey))
+            namePlayerCache.Remove(oldKey);
+
+        if (forceOffline) 
+            userData.IsConnected = false;
+            
+        var playerData = new PlayerData(
+            newName, 
+            userData.PlatformId, 
+            userData.IsConnected, 
+            userEntity, 
+            userData.LocalCharacter._Entity
+        );
+
+        // Store new name with lowercase key
+        var newKey = newName?.ToLowerInvariant() ?? "";
+        if (!string.IsNullOrEmpty(newKey))
+            namePlayerCache[newKey] = playerData;
+            
+        steamPlayerCache[userData.PlatformId] = playerData;
+        idPlayerCache[EM.GetComponentData<NetworkId>(userEntity)] = playerData;
+    }
+
+    #region Player Queries
+
+    /// <summary>
+    /// Attempts to find a player by their character name.
+    /// </summary>
+    /// <param name="name">The name of the player to find (case-insensitive, supports partial matches)</param>
+    /// <param name="playerData">The player data if found</param>
+    /// <returns>True if a single matching player was found, false otherwise</returns>
+    public static bool TryFindByName(string name, out PlayerData playerData)
+    {
+        playerData = default;
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
+
+        EnsureInitialized();
+        var lowerName = name.Trim().ToLowerInvariant();
+
+        // First try exact match
+        if (namePlayerCache.TryGetValue(lowerName, out playerData))
+            return true;
+
+        // Then try partial match
+        var matchingPlayers = namePlayerCache
+            .Where(kvp => kvp.Key.Contains(lowerName))
+            .Select(kvp => kvp.Value)
+            .ToList();
+
+        if (matchingPlayers.Count == 1)
+        {
+            playerData = matchingPlayers[0];
+            return true;
+        }
+
+        // Log available players for debugging
+        var onlinePlayers = namePlayerCache.Values
+            .Where(p => p.IsConnected)
+            .Select(p => p.Name)
+            .OrderBy(n => n)
+            .ToList();
+
+        Plugin.Logger?.LogWarning($"Player '{name}' not found. {onlinePlayers.Count} online players: {string.Join(", ", onlinePlayers)}");
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to find a player by their network ID.
+    /// </summary>
+    /// <param name="networkId">The network ID of the player to find</param>
+    /// <param name="playerData">The player data if found</param>
+    /// <returns>True if the player was found, false otherwise</returns>
+    public static bool TryFindByNetworkId(NetworkId networkId, out PlayerData playerData)
+    {
+        EnsureInitialized();
+        return idPlayerCache.TryGetValue(networkId, out playerData);
+    }
+
+    /// <summary>
+    /// Attempts to find a player by their Steam ID.
+    /// </summary>
+    /// <param name="steamId">The Steam ID of the player to find</param>
+    /// <param name="playerData">The player data if found</param>
+    /// <returns>True if the player was found, false otherwise</returns>
+    public static bool TryFindBySteamId(ulong steamId, out PlayerData playerData)
+    {
+        EnsureInitialized();
+        return steamPlayerCache.TryGetValue(steamId, out playerData);
+    }
+
+    /// <summary>
+    /// Gets all currently connected players.
+    /// </summary>
+    /// <returns>A list of all connected players</returns>
+    public static List<PlayerData> GetOnlinePlayers()
+    {
+        EnsureInitialized();
+        return namePlayerCache.Values
+            .Where(p => p.IsConnected)
+            .ToList();
+    }
+    
+    /// <summary>
+    /// Gets all known players (both online and offline).
+    /// </summary>
+    /// <returns>A list of all known players</returns>
+    public static List<PlayerData> GetAllPlayers()
+    {
+        EnsureInitialized();
+        return namePlayerCache.Values.ToList();
+    }
+    
+    /// <summary>
+    /// Gets the number of currently connected players.
+    /// </summary>
+    /// <returns>The number of connected players</returns>
+    public static int GetOnlinePlayerCount()
+    {
+        EnsureInitialized();
+        return namePlayerCache.Values.Count(p => p.IsConnected);
+    }
+    
+    /// <summary>
+    /// Gets the total number of known players (both online and offline).
+    /// </summary>
+    /// <returns>The total number of known players</returns>
+    public static int GetTotalPlayerCount()
+    {
+        EnsureInitialized();
+        return namePlayerCache.Count;
+    }
+    
+    /// <summary>
+    /// Checks if a player with the given name exists.
+    /// </summary>
+    /// <param name="name">The name to check (case-insensitive)</param>
+    /// <returns>True if a player with the name exists, false otherwise</returns>
+    public static bool PlayerExists(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
+            
+        EnsureInitialized();
+        return namePlayerCache.ContainsKey(name.Trim().ToLowerInvariant());
+    }
+
+    #endregion
+}

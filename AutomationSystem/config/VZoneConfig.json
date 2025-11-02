@@ -1,0 +1,18 @@
+{
+  "SwapZone": {
+    "X": 1000,
+    "Y": 20,
+    "Z": 500,
+    "Radius": 20
+  },
+  "TeleportToU2": {
+    "X": 1500,
+    "Y": 20,
+    "Z": 800
+  },
+  "EndGameItems": [
+    { "ItemId": 123456, "StackSize": 1 },
+    { "ItemId": 234567, "StackSize": 2 },
+    { "ItemId": 345678, "StackSize": 4 }
+  ]
+}
