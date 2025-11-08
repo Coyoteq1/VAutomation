@@ -1,6 +1,6 @@
-# CrowbaneArena
+# V Automation
 
-Arena mode for V Rising servers. Players get full VBlood access, curated loadouts, and automatic state restore when they leave the arena.
+V Rising Automation mod for V Rising servers. Players get full VBlood access, curated loadouts, and automatic state restore when they leave the arena.
 
 ---
 
