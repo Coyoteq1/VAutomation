@@ -129,7 +129,7 @@ Changes apply on the next server restart.
 
 Encounter an issue? Check server logs in `BepInEx/LogOutput.log` and share reproducible steps when reporting.
 
-- Join the community modding Discord: [discord.gg/99yzyAD8](https://discord.gg/99yzyAD8)
+- Join the VRising modding community  Discord: [discord.gg/99yzyAD8](https://discord.gg/99yzyAD8)
 
 ---
 
