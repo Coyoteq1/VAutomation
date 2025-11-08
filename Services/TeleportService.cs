@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using System;
+using System.Linq;
 using ProjectM;
 using Stunlock.Core;
 using ProjectM.Network;
@@ -136,17 +137,33 @@ public static class TeleportService
     }
 
     /// <summary>
-    /// Teleport to arena spawn point
+    /// Teleport to arena spawn point from config
     /// </summary>
     public static bool TeleportToArena(Entity characterEntity, bool checkRestrictions = true)
     {
-        var spawnPoint = ArenaController.GetSpawnPoint();
+        var spawnPoint = GetArenaSpawnFromConfig();
         if (spawnPoint.x == 0 && spawnPoint.y == 0 && spawnPoint.z == 0)
         {
-            Plugin.Logger?.LogWarning("Arena spawn point not set");
+            Plugin.Logger?.LogWarning("Arena spawn point not configured");
             return false;
         }
         return Teleport(characterEntity, spawnPoint, checkRestrictions);
+    }
+
+    /// <summary>
+    /// Get arena spawn point from configuration
+    /// </summary>
+    private static float3 GetArenaSpawnFromConfig()
+    {
+        if (ArenaConfigurationService.ArenaSettings?.Zones != null && ArenaConfigurationService.ArenaSettings.Zones.Count > 0)
+        {
+            var enabledZone = ArenaConfigurationService.ArenaSettings.Zones.FirstOrDefault(z => z.Enabled);
+            if (enabledZone != null)
+            {
+                return new float3(enabledZone.SpawnX, enabledZone.SpawnY, enabledZone.SpawnZ);
+            }
+        }
+        return float3.zero;
     }
 
     /// <summary>

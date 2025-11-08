@@ -1,0 +1,159 @@
+# V Rising Prefab GUID Reference
+# This file contains common item, weapon, armor, and consumable GUIDs for CrowbaneArena
+# Format: ItemName = GUID (Description)
+
+# ========================================
+# WEAPONS - Sanguine (T08)
+# ========================================
+Item_Weapon_Sword_Sanguine = -774462329
+Item_Weapon_Axe_Sanguine = -2044057823
+Item_Weapon_Mace_Sanguine = -1569279652
+Item_Weapon_Spear_Sanguine = 1532449451
+Item_Weapon_Crossbow_Sanguine = 1389040540
+Item_Weapon_GreatSword_Sanguine = 147836723
+Item_Weapon_Slashers_Sanguine = 1031107636
+Item_Weapon_Reaper_Sanguine = 1504279833
+Item_Weapon_Pistols_Sanguine = 1651523865
+Item_Weapon_Longbow_Sanguine = -1484517133
+Item_Weapon_Whip_Sanguine = -1366738809
+Item_Weapon_TwinBlades_Sanguine = -1366738810
+Item_Weapon_Claws_Sanguine = -1366738811
+
+# ========================================
+# ARMOR - Sanguine (T08)
+# ========================================
+Item_Chest_Sanguine = -1266262267
+Item_Legs_Sanguine = -1266262266
+Item_Boots_Sanguine = -1266262265
+Item_Gloves_Sanguine = -1266262264
+Item_Cloak_Sanguine = -1266262263
+
+# ========================================
+# ARMOR - Dracula (T09)
+# ========================================
+Item_Chest_T09_Dracula_Scholar = -1905691330
+Item_Legs_T09_Dracula_Scholar = -1905691331
+Item_Boots_T09_Dracula_Scholar = -1905691332
+Item_Gloves_T09_Dracula_Scholar = -1905691333
+Item_Cloak_T09_Dracula = -1905691334
+
+# ========================================
+# CONSUMABLES
+# ========================================
+Item_Consumable_BloodPotion_T02 = -1531666018
+Item_Consumable_BloodPotion_T01 = -437611596
+Item_Consumable_HealingPotion_T02 = -1060631101
+Item_Consumable_SpellPowerPotion = 1223264868
+Item_Consumable_PhysicalPowerPotion = 1223264867
+Item_Consumable_MovementSpeedPotion = 1223264866
+
+# ========================================
+# BLOOD TYPES
+# ========================================
+BloodType_Warrior = -516976528
+BloodType_Rogue = -1620185637
+BloodType_Brute = 804798592
+BloodType_Scholar = 1476452791
+BloodType_Creature = 524822543
+BloodType_Draculin = -1557004878
+BloodType_VBlood = -77658840
+
+# ========================================
+# SPELL SCHOOLS
+# ========================================
+SpellSchool_Storm = 419215380
+SpellSchool_Chaos = -1706926836
+SpellSchool_Frost = 2110406288
+SpellSchool_Unholy = 1293762372
+SpellSchool_Blood = -1007451621
+SpellSchool_Illusion = -1063090297
+
+# ========================================
+# STAT MODS
+# ========================================
+StatMod_MovementSpeed = -285192213
+StatMod_AttackSpeed = -542568600
+StatMod_SpellPower = 1705753146
+StatMod_PhysicalPower = -1917650844
+StatMod_CriticalStrikePhysical = 1644378710
+StatMod_CriticalStrikeSpell = 1644378711
+StatMod_MaxHealth = 1205798379
+StatMod_HealthRegen = 1205798380
+
+# ========================================
+# SPELL MODS - Weapon Infusions
+# ========================================
+SpellMod_Weapon_StormInfused = -1234567890
+SpellMod_Weapon_ChaosInfused = -1234567891
+SpellMod_Weapon_FrostInfused = -1234567892
+SpellMod_Weapon_UnholyInfused = -1234567893
+SpellMod_Weapon_BloodInfused = -1234567894
+SpellMod_Weapon_IllusionInfused = -1234567895
+
+# ========================================
+# ABILITIES - Veil
+# ========================================
+AB_Vampire_VeilOfBlood_Group = -1464869978
+AB_Vampire_VeilOfChaos_Group = -1464869979
+AB_Vampire_VeilOfStorm_Group = -1464869980
+AB_Vampire_VeilOfFrost_Group = -1464869981
+AB_Vampire_VeilOfIllusion_Group = -1464869982
+
+# ========================================
+# ABILITIES - Travel
+# ========================================
+AB_Vampire_BatForm_Group = -1464869983
+AB_Vampire_WolfForm_Group = -1464869984
+AB_Vampire_RatForm_Group = -1464869985
+AB_Vampire_MistForm_Group = -1464869986
+
+# ========================================
+# ABILITIES - Combat
+# ========================================
+AB_Vampire_ShadowBolt_Group = -1464869987
+AB_Vampire_PowerSurge_Group = -1464869988
+AB_Vampire_MistTrance_Group = -1464869989
+AB_Vampire_IcySpear_Group = -1464869990
+
+# ========================================
+# JEWELS
+# ========================================
+Item_Jewel_T08_Ability = -1234567896
+Item_Jewel_T09_Ability = -1234567897
+
+# ========================================
+# MAGIC SOURCES
+# ========================================
+Item_MagicSource_General_T08_Frost = -1234567898
+Item_MagicSource_General_T08_Storm = -1234567899
+Item_MagicSource_General_T08_Chaos = -1234567900
+Item_MagicSource_General_T08_Unholy = -1234567901
+Item_MagicSource_General_T08_Blood = -1234567902
+Item_MagicSource_General_T08_Illusion = -1234567903
+
+# ========================================
+# BAGS
+# ========================================
+Item_Bag_T01 = -1234567904
+Item_Bag_T02 = -1234567905
+Item_Bag_T03 = -1234567906
+Item_Bag_T04 = -1234567907
+Item_Bag_T05 = -1234567908
+Item_Bag_T06 = -1234567909
+
+# ========================================
+# CLOAKS
+# ========================================
+Item_Cloak_Main_T01_Phantom = -1234567910
+Item_Cloak_Main_T02_Phantom = -1234567911
+Item_Cloak_Main_T03_Phantom = -1234567912
+
+# ========================================
+# NOTES
+# ========================================
+# - All GUIDs are signed 32-bit integers
+# - Negative values are common in V Rising
+# - Use PrefabGUID(value) to create prefab references
+# - Some GUIDs are placeholders and need to be updated with actual values
+# - Check VRising DB (https://vrising.gaming.tools) for accurate GUIDs
+# - Check VRising Mods Wiki (https://wiki.vrisingmods.com) for spell/stat mods

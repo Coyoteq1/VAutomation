@@ -11,7 +11,7 @@ namespace CrowbaneArena.Services
 
         public PatchService()
         {
-            harmony = new Harmony("CrowbaneArena");
+            harmony = new Harmony("Snapshots");
             harmony.PatchAll();
         }
 

@@ -101,6 +101,21 @@ public class SystemService
     SetTeamOnSpawnSystem _setTeamOnSpawnSystem;
     public SetTeamOnSpawnSystem SetTeamOnSpawnSystem => _setTeamOnSpawnSystem ??= GetSystem<SetTeamOnSpawnSystem>();
 
+    DeathEventListenerSystem _deathEventListenerSystem;
+    public DeathEventListenerSystem DeathEventListenerSystem => _deathEventListenerSystem ??= GetSystem<DeathEventListenerSystem>();
+
+    ChatMessageSystem _chatMessageSystem;
+    public ChatMessageSystem ChatMessageSystem => _chatMessageSystem ??= GetSystem<ChatMessageSystem>();
+
+    UnitSpawnerReactSystem _unitSpawnerReactSystem;
+    public UnitSpawnerReactSystem UnitSpawnerReactSystem => _unitSpawnerReactSystem ??= GetSystem<UnitSpawnerReactSystem>();
+
+    VBloodSystem _vBloodSystem;
+    public VBloodSystem VBloodSystem => _vBloodSystem ??= GetSystem<VBloodSystem>();
+
+    BloodAltarSystem_StartTrackVBloodUnit_System_V2 _bloodAltarSystem_StartTrackVBloodUnit_System_V2;
+    public BloodAltarSystem_StartTrackVBloodUnit_System_V2 BloodAltarSystem_StartTrackVBloodUnit_System_V2 => _bloodAltarSystem_StartTrackVBloodUnit_System_V2 ??= GetSystem<BloodAltarSystem_StartTrackVBloodUnit_System_V2>();
+
     SpellModSyncSystem_Server _spellModSyncSystem_Server;
     public SpellModSyncSystem_Server SpellModSyncSystem_Server => _spellModSyncSystem_Server ??= GetSystem<SpellModSyncSystem_Server>();
 
@@ -207,9 +222,11 @@ public class SystemService
         return ServerScriptMapper.GetSingletonEntity<T>();
     }
 
-    Entity GetSingletonEntityFromAccessor<T>()
+    Entity GetSingletonEntityFromAccessor<T>() where T : unmanaged
     {
-        // Placeholder - needs SingletonAccessor implementation
-        return Entity.Null;
+        var query = _world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<T>());
+        var entity = query.GetSingletonEntity();
+        query.Dispose();
+        return entity;
     }
 }

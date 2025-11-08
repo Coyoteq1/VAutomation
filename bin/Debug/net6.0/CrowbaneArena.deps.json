@@ -10,6 +10,7 @@
         "dependencies": {
           "BepInEx.Core": "6.0.0-be.738",
           "BepInEx.Unity.IL2CPP": "6.0.0-be.738",
+          "Castle.Core": "5.2.1",
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.Extensions.DependencyInjection": "8.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
@@ -18,6 +19,7 @@
           "Newtonsoft.Json": "13.0.3",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "VRising.UnhollowedX.Client": "1.0.10",
+          "KindredSchematics": "0.1.5.5",
           "VampireCommandFramework": "0.10.4.0"
         },
         "runtime": {
@@ -77,6 +79,17 @@
           "Il2CppInterop.Runtime": "1.5.0-ci.620",
           "MonoMod.RuntimeDetour": "22.7.31.1",
           "Samboy063.Cpp2IL.Core": "2022.1.0-pre-release.19"
+        }
+      },
+      "Castle.Core/5.2.1": {
+        "dependencies": {
+          "System.Diagnostics.EventLog": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/Castle.Core.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.2.1.0"
+          }
         }
       },
       "Disarm/2022.1.0-master.57": {},
@@ -393,6 +406,28 @@
           "System.Reflection": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Threading": "4.3.0"
+        }
+      },
+      "System.Diagnostics.EventLog/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.Messages.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
         }
       },
       "System.Diagnostics.Tracing/4.3.0": {
@@ -1395,6 +1430,14 @@
           }
         }
       },
+      "KindredSchematics/0.1.5.5": {
+        "runtime": {
+          "KindredSchematics.dll": {
+            "assemblyVersion": "0.1.5.5",
+            "fileVersion": "0.1.5.5"
+          }
+        }
+      },
       "VampireCommandFramework/0.10.4.0": {
         "runtime": {
           "VampireCommandFramework.dll": {
@@ -1480,6 +1523,13 @@
       "sha512": "sha512-vtX3X+AlR4oJLHWSAqJsYuYw6Vr7OE8tGo8eLPds46tKd4RcRCD98brEhmttc20bNFig4HHwnVx5qUq3Cp7t+w==",
       "path": "bepinex.unity.il2cpp/6.0.0-be.738",
       "hashPath": "bepinex.unity.il2cpp.6.0.0-be.738.nupkg.sha512"
+    },
+    "Castle.Core/5.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wHARzQA695jwwKreOzNsq54KiGqKP38tv8hi8e2FXDEC/sA6BtrX90tVPDkOfVu13PbEzr00TCV8coikl+D1Iw==",
+      "path": "castle.core/5.2.1",
+      "hashPath": "castle.core.5.2.1.nupkg.sha512"
     },
     "Disarm/2022.1.0-master.57": {
       "type": "package",
@@ -1831,6 +1881,13 @@
       "path": "system.diagnostics.diagnosticsource/4.3.0",
       "hashPath": "system.diagnostics.diagnosticsource.4.3.0.nupkg.sha512"
     },
+    "System.Diagnostics.EventLog/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-lcyUiXTsETK2ALsZrX+nWuHSIQeazhqPphLfaRxzdGaG93+0kELqpgEHtwWOlQe7+jSFnKwaCAgL4kjeZCQJnw==",
+      "path": "system.diagnostics.eventlog/6.0.0",
+      "hashPath": "system.diagnostics.eventlog.6.0.0.nupkg.sha512"
+    },
     "System.Diagnostics.Tracing/4.3.0": {
       "type": "package",
       "serviceable": true,
@@ -2075,6 +2132,11 @@
       "sha512": "sha512-e031JW3TUs8untv6GBx7oGPNwlRwIDBlvghUUUpSl69I0hbdKyn7E5RnDThZWoRPocoRyQWj4RUkfiMIfOTVRg==",
       "path": "vrising.unhollowedx.client/1.0.10",
       "hashPath": "vrising.unhollowedx.client.1.0.10.nupkg.sha512"
+    },
+    "KindredSchematics/0.1.5.5": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
     },
     "VampireCommandFramework/0.10.4.0": {
       "type": "reference",

@@ -1,0 +1,30 @@
+{
+  "snapshotSettings": {
+    "enabled": true,
+    "autoBackup": true,
+    "backupInterval": 3600,
+    "maxSnapshots": 10,
+    "compressSnapshots": false,
+    "validateOnLoad": true,
+    "backupPath": "Snapshots/Backups",
+    "workingPath": "Snapshots/Working"
+  },
+  "dataValidation": {
+    "checkGUIDs": true,
+    "validatePrefabs": true,
+    "validateLoadouts": true,
+    "checkForCorruption": true,
+    "autoRepair": true
+  },
+  "backupSettings": {
+    "keepDailyBackups": 7,
+    "keepWeeklyBackups": 4,
+    "keepMonthlyBackups": 3,
+    "autoCleanup": true
+  },
+  "migrationSettings": {
+    "autoMigrateOnLoad": true,
+    "backupBeforeMigration": true,
+    "version": "1.0.0"
+  }
+}

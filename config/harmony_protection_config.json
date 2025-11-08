@@ -1,0 +1,43 @@
+{
+  "harmonyProtection": {
+    "enabled": true,
+    "logLevel": "Info",
+    "skipProblematicAssemblies": true,
+    "maxRetries": 3,
+    "problematicAssemblies": [
+      "__Generated",
+      "UnityEngine.PhysicsModule",
+      "UnityEngine.ParticleSystemModule", 
+      "UnityEngine.UIElementsModule",
+      "UnityEngine.VirtualTexturingModule"
+    ],
+    "problematicTypePatterns": [
+      "MotionBlob",
+      "ChildMotionBlob", 
+      "BlendTreeBlob",
+      "Flags",
+      "LightProbesQueryDisposeJob",
+      "PageStatistics",
+      "TextureStackBase`1",
+      "HybridEquipmentStreamingHandler+Singleton",
+      "HybridModelStreamingHandler+Singleton",
+      "UIAssetSubSceneLoader_ClientWorld+Singleton",
+      "UIAssetSubSceneLoader_DefaultWorld+Singleton"
+    ],
+    "enableAssemblyInfoLogging": true,
+    "enableDetailedErrorReporting": true,
+    "gracefulDegradation": true
+  },
+  "vBloodHookSettings": {
+    "enabled": true,
+    "fallbackOnFailure": true,
+    "maxTypeDiscoveryAttempts": 2,
+    "logSuccessfulPatches": true,
+    "logFailedPatches": true
+  },
+  "debugging": {
+    "enableReflectionDebugging": false,
+    "logTypeLoadingTimes": false,
+    "verboseAssemblyScanning": false
+  }
+}

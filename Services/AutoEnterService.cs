@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
 using ProjectM;
@@ -23,9 +24,21 @@ namespace CrowbaneArena.Services
         public static void Initialize()
         {
             LoadPreferences();
-            // TODO: Re-enable when EventManager is properly implemented
-            // EventManager.OnUserConnected += OnPlayerConnected;
-            Plugin.Logger?.LogInfo("AutoEnterService initialized (EventManager integration disabled)");
+            
+            // Wire into EventFramework if available
+            try
+            {
+                // Uncomment and modify these lines based on your event system
+                // EventFrameworkApi.OnUserConnected += (userEntity) => TryAutoEnter(userEntity, reason: "Connected");
+                // EventFrameworkApi.OnCharacterSpawned += (userEntity, characterEntity) => TryAutoEnter(userEntity, characterEntity, "Spawned");
+                // EventFrameworkApi.OnUserDisconnected += (userEntity) => TryAutoExit(userEntity, reason: "Disconnected");
+                
+                Plugin.Logger?.LogInfo("AutoEnterService initialized with event hooks");
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogWarning($"AutoEnterService initialized without event hooks: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -64,29 +77,140 @@ namespace CrowbaneArena.Services
             return loadout;
         }
 
-        /// <summary>
-        /// Handle player connection event
-        /// </summary>
-        private static void OnPlayerConnected(Entity userEntity)
+        public static bool TryAutoEnter(Entity userEntity, Entity characterEntity = default, string reason = null)
         {
-            var user = EM.GetComponentData<User>(userEntity);
-            if (!IsAutoEnterEnabled(user.PlatformId)) return;
-
-            var characterEntity = PlayerService.GetPlayerCharacter(userEntity);
-            if (characterEntity == Entity.Null) return;
-
-            // Auto-equip loadout if specified
-            if (_autoEquipLoadouts.TryGetValue(user.PlatformId, out var loadoutName))
+            try
             {
-                // Replace with your loadout equipping logic
-                // Example: LoadoutManager.EquipLoadout(characterEntity, loadoutName);
-                Plugin.Logger?.LogInfo($"Auto-equipped loadout '{loadoutName}' for {user.CharacterName}");
+                if (!EM.TryGetComponentData(userEntity, out User user)) 
+                {
+                    Plugin.Logger?.LogWarning("TryAutoEnter: Invalid user entity");
+                    return false;
+                }
+
+                if (!IsAutoEnterEnabled(user.PlatformId)) 
+                {
+                    Plugin.Logger?.LogDebug($"Auto-enter not enabled for {user.CharacterName}");
+                    return false;
+                }
+
+                if (characterEntity == Entity.Null)
+                {
+                    characterEntity = user.LocalCharacter.GetEntityOnServer();
+                    if (characterEntity == Entity.Null) 
+                    {
+                        Plugin.Logger?.LogWarning($"TryAutoEnter: Could not find character entity for {user.CharacterName}");
+                        return false;
+                    }
+                }
+
+                // Check if already in arena
+                if (SnapshotService.IsInArena(user.PlatformId))
+                {
+                    Plugin.Logger?.LogInfo($"[AutoEnter] {user.CharacterName} already in arena");
+                    return true;
+                }
+
+                Plugin.Logger?.LogInfo($"[AutoEnter] Processing auto-enter for {user.CharacterName}, reason: {reason ?? "unknown"}");
+
+                // Step 1: Snapshot boss unlock state BEFORE any mutations
+                try
+                {
+                    BossManager.SnapshotBossUnlockState(characterEntity);
+                    Plugin.Logger?.LogDebug($"[AutoEnter] Boss unlock state snapshotted for {user.CharacterName}");
+                }
+                catch (Exception bex)
+                {
+                    Plugin.Logger?.LogWarning($"[AutoEnter] Failed to snapshot boss unlocks for {user.CharacterName}: {bex.Message}");
+                }
+
+                // Step 2: Create player snapshot and enter arena
+                var loadout = GetAutoEquipLoadout(user.PlatformId) ?? "default";
+                var spawn = ZoneManager.SpawnPoint;
+
+                bool entered = SnapshotService.EnterArena(userEntity, characterEntity, spawn, loadout);
+                if (!entered) 
+                {
+                    Plugin.Logger?.LogError($"[AutoEnter] SnapshotService.EnterArena failed for {user.CharacterName}");
+                    return false;
+                }
+
+                // Step 3: Apply zone manager arena logic
+                try 
+                { 
+                    ZoneManager.ManualEnterArena(characterEntity);
+                    Plugin.Logger?.LogInfo($"[AutoEnter] Successfully entered arena: {user.CharacterName} (reason: {reason ?? "unknown"})");
+                } 
+                catch (Exception zex)
+                {
+                    Plugin.Logger?.LogError($"[AutoEnter] ZoneManager.ManualEnterArena failed for {user.CharacterName}: {zex.Message}");
+                    // Try to clean up the snapshot if zone entry failed
+                    try { SnapshotService.ExitArena(userEntity, characterEntity); } catch { }
+                    return false;
+                }
+
+                return true;
             }
-
-            // Teleport to arena
-            if (TeleportService.TeleportToArena(characterEntity))
+            catch (Exception ex)
             {
-                Plugin.Logger?.LogInfo($"Auto-entered {user.CharacterName} to arena");
+                Plugin.Logger?.LogError($"TryAutoEnter error for user {userEntity}: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool TryAutoExit(Entity userEntity, Entity characterEntity = default, string reason = null)
+        {
+            try
+            {
+                if (!EM.TryGetComponentData(userEntity, out User user)) 
+                {
+                    Plugin.Logger?.LogWarning("TryAutoExit: Invalid user entity");
+                    return false;
+                }
+
+                if (!SnapshotService.IsInArena(user.PlatformId)) 
+                {
+                    Plugin.Logger?.LogDebug($"[AutoExit] {user.CharacterName} not in arena");
+                    return false;
+                }
+
+                if (characterEntity == Entity.Null)
+                {
+                    characterEntity = user.LocalCharacter.GetEntityOnServer();
+                    if (characterEntity == Entity.Null) 
+                    {
+                        Plugin.Logger?.LogWarning($"TryAutoExit: Could not find character entity for {user.CharacterName}");
+                        return false;
+                    }
+                }
+
+                Plugin.Logger?.LogInfo($"[AutoExit] Processing auto-exit for {user.CharacterName}, reason: {reason ?? "unknown"}");
+
+                // Step 1: Restore player state from snapshot
+                bool restored = SnapshotService.ExitArena(userEntity, characterEntity);
+                if (!restored)
+                {
+                    Plugin.Logger?.LogError($"[AutoExit] SnapshotService.ExitArena failed for {user.CharacterName}");
+                    return false;
+                }
+
+                // Step 2: Apply zone manager exit logic
+                try 
+                { 
+                    ZoneManager.ManualExitArena(characterEntity);
+                    Plugin.Logger?.LogInfo($"[AutoExit] Successfully exited arena: {user.CharacterName} (reason: {reason ?? "unknown"})");
+                } 
+                catch (Exception zex)
+                {
+                    Plugin.Logger?.LogWarning($"[AutoExit] ZoneManager.ManualExitArena failed for {user.CharacterName}: {zex.Message}");
+                    // Continue anyway since snapshot restoration succeeded
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger?.LogError($"TryAutoExit error for user {userEntity}: {ex.Message}");
+                return false;
             }
         }
 
@@ -97,8 +221,12 @@ namespace CrowbaneArena.Services
         {
             try
             {
-                // Save to database or file
-                // Example: Database.Save("AutoEnterPrefs", new { _autoEnterEnabled, _autoEquipLoadouts });
+                var payload = new AutoEnterPrefs
+                {
+                    Enabled = new Dictionary<ulong, bool>(_autoEnterEnabled),
+                    Loadouts = new Dictionary<ulong, string>(_autoEquipLoadouts)
+                };
+                SnapshotManager.SaveSnapshot("AutoEnterPrefs.json", payload);
             }
             catch (Exception ex)
             {
@@ -113,13 +241,91 @@ namespace CrowbaneArena.Services
         {
             try
             {
-                // Load from database or file
-                // Example: var data = Database.Load<...>("AutoEnterPrefs");
+                var prefs = SnapshotManager.LoadSnapshot<AutoEnterPrefs>("AutoEnterPrefs.json");
+                if (prefs != null)
+                {
+                    _autoEnterEnabled.Clear();
+                    _autoEquipLoadouts.Clear();
+                    foreach (var kv in prefs.Enabled) _autoEnterEnabled[kv.Key] = kv.Value;
+                    foreach (var kv in prefs.Loadouts) _autoEquipLoadouts[kv.Key] = kv.Value;
+                }
             }
             catch (Exception ex)
             {
                 Plugin.Logger?.LogError($"Error loading auto-enter preferences: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Get count of players with auto-enter enabled
+        /// </summary>
+        public static int GetAutoEnterCount()
+        {
+            return _autoEnterEnabled.Count(kvp => kvp.Value);
+        }
+
+        /// <summary>
+        /// Get all players with auto-enter enabled
+        /// </summary>
+        public static Dictionary<ulong, string> GetAutoEnterPlayers()
+        {
+            var result = new Dictionary<ulong, string>();
+            foreach (var kvp in _autoEnterEnabled)
+            {
+                if (kvp.Value)
+                {
+                    var loadout = GetAutoEquipLoadout(kvp.Key) ?? "default";
+                    result[kvp.Key] = loadout;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Clear all auto-enter settings
+        /// </summary>
+        public static void ClearAllAutoEnter()
+        {
+            _autoEnterEnabled.Clear();
+            _autoEquipLoadouts.Clear();
+            SavePreferences();
+            Plugin.Logger?.LogInfo("All auto-enter settings cleared");
+        }
+
+        /// <summary>
+        /// Event handlers for connection/disconnection (call these from your event system)
+        /// </summary>
+        public static void OnUserConnected(Entity userEntity)
+        {
+            TryAutoEnter(userEntity, reason: "Connected");
+        }
+
+        public static void OnCharacterSpawned(Entity userEntity, Entity characterEntity)
+        {
+            TryAutoEnter(userEntity, characterEntity, "Spawned");
+        }
+
+        public static void OnUserDisconnected(Entity userEntity)
+        {
+            // Create leave snapshot before exiting
+            if (CrowbaneArenaCore.EntityManager.TryGetComponentData(userEntity, out User user))
+            {
+                var characterEntity = user.LocalCharacter.GetEntityOnServer();
+                if (characterEntity != Entity.Null)
+                {
+                    // AutoSnapshotService.CreateLeaveSnapshot(user, characterEntity);
+                    // Delete snapshot after creating leave snapshot
+                    // AutoSnapshotService.DeletePlayerSnapshotOnExit(user.PlatformId);
+                }
+            }
+
+            TryAutoExit(userEntity, reason: "Disconnected");
+        }
+
+        private class AutoEnterPrefs
+        {
+            public Dictionary<ulong, bool> Enabled { get; set; } = new();
+            public Dictionary<ulong, string> Loadouts { get; set; } = new();
         }
     }
 }

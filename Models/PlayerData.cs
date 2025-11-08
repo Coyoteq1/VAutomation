@@ -5,35 +5,42 @@ namespace CrowbaneArena.Models
     /// <summary>
     /// Represents player data including user and character entity references.
     /// </summary>
-    public struct PlayerData
+    public class PlayerData
     {
         /// <summary>
         /// The user entity associated with this player.
         /// </summary>
-        public Entity UserEntity { get; }
-        
+        public Entity UserEntity { get; set; }
+
         /// <summary>
         /// The character entity controlled by this player.
         /// </summary>
-        public Entity CharacterEntity { get; }
-        
+        public Entity CharEntity { get; set; }
+
         /// <summary>
         /// The player's character name.
         /// </summary>
-        public string Name { get; }
-        
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// The player's Steam ID.
         /// </summary>
-        public ulong SteamId { get; }
-        
+        public ulong SteamId { get; set; }
+
         /// <summary>
         /// Indicates whether the player is currently connected.
         /// </summary>
-        public bool IsConnected { get; }
+        public bool IsConnected { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerData"/> struct.
+        /// Initializes a new instance of the <see cref="PlayerData"/> class.
+        /// </summary>
+        public PlayerData()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerData"/> class.
         /// </summary>
         /// <param name="name">The player's character name.</param>
         /// <param name="steamId">The player's Steam ID.</param>
@@ -46,7 +53,7 @@ namespace CrowbaneArena.Models
             SteamId = steamId;
             IsConnected = isConnected;
             UserEntity = userEntity;
-            CharacterEntity = characterEntity;
+            CharEntity = characterEntity;
         }
     }
 }

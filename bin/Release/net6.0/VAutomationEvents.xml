@@ -1,0 +1,3217 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>VAutomationEvents</name>
+    </assembly>
+    <members>
+        <member name="T:CrowbaneArena.VRisingCore">
+            <summary>
+            Core utility class for accessing V Rising game systems and components.
+            Provides centralized access to EntityManager, Server, and other game systems.
+            Updated to match working ICB.core pattern for proper V Rising 1.1+ compatibility.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.VRisingCore.Initialize">
+            <summary>
+            Initialize VRisingCore with proper world detection
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.VRisingCore.ServerWorld">
+            <summary>
+            Gets the V Rising Server World using the working ICB.core pattern
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.VRisingCore.EntityManager">
+            <summary>
+            Gets the EntityManager for the current world using working pattern.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.VRisingCore.ServerGameManager">
+            <summary>
+            Gets the ServerGameManager for spawning items and managing game state.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.VRisingCore.Server">
+            <summary>
+            Gets the main Server system.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.VRisingCore.Log">
+            <summary>
+            Gets the current log source for logging messages.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.VRisingCore.InitializeServerGameManager">
+            <summary>
+            Initialize the ServerGameManager from the server systems.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.VRisingCore.Reinitialize">
+            <summary>
+            Force reinitialize all systems (useful after world changes).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.VRisingCore.IsReady">
+            <summary>
+            Check if all required systems are available.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.VRisingCore.ValidateEntity(Unity.Entities.Entity,Unity.Entities.ComponentType[])">
+            <summary>
+            Validate that an entity exists and has the required components.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.CrowbaneArenaCore">
+            <summary>
+            Core initialization and service management for CrowbaneArena.
+            Provides centralized access to all arena services and VRising systems.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.CrowbaneArenaCore.World">
+            <summary>
+            Gets the main VRising world (equivalent to Core.Server in original VAMP).
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.CrowbaneArenaCore.EntityManager">
+            <summary>
+            EntityManager for the current VRising world.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.CrowbaneArenaCore.SystemService">
+            <summary>
+            System service providing access to ECS systems.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.CrowbaneArenaCore.PlayerServiceInitialized">
+            <summary>
+            Player service for player management and lookups (static class - no initialization needed).
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.CrowbaneArenaCore.SpawnServiceInitialized">
+            <summary>
+            Spawn service for PvP player positioning (static class).
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.CrowbaneArenaCore.HasInitialized">
+            <summary>
+            Indicates whether the core services have been initialized.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.CrowbaneArenaCore.Initialize">
+            <summary>
+            Initializes all CrowbaneArena core services.
+            Call this after VRising has loaded all its systems.
+            </summary>
+        </member>
+        <member name="E:CrowbaneArena.CrowbaneArenaCore.OnCoreLoaded">
+            <summary>
+            Event triggered after core initialization completes.
+            Subscribe to this to perform custom setup after services are available.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.CrowbaneArenaCore.GetStatus">
+            <summary>
+            Gets information about the current initialization state.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.CrowbaneArenaCore.Reinitialize">
+            <summary>
+            Force reinitialize all services (useful for testing or world changes).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Attributes.FileReloadAttribute.#ctor(System.String)">
+            <summary>
+            Marks a file path for automatic reload detection.
+            </summary>
+            <param name="callbackMethodName">Static method to call when file changes (should be void Method()).
+            If null, will use "Reload" + the field/property name (e.g., [FileReload] MyConfig → ReloadMyConfig)</param>
+        </member>
+        <member name="T:CrowbaneArena.LegacyArenaCommands">
+            <summary>
+            Legacy Arena Commands implementation
+            This class is obsolete and will be removed in a future version.
+            Please use ArenaCommands class instead.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Commands.LoadoutCommands">
+            <summary>
+            Loadout management commands for VRising arena system.
+            Provides chat commands to list, apply, and manage loadouts.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Commands.LoadoutCommands.ListLoadouts(VampireCommandFramework.ChatCommandContext)">
+            <summary>
+            List all available loadouts (custom + default)
+            Usage: .loadouts
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Commands.LoadoutCommands.ListCustomLoadouts(VampireCommandFramework.ChatCommandContext)">
+            <summary>
+            List only custom loadouts
+            Usage: .loadouts custom
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:CrowbaneArena.Commands.LoadoutCommands.ApplyLoadout(VampireCommandFramework.ChatCommandContext,System.String)" -->
+        <!-- Badly formed XML comment ignored for member "M:CrowbaneArena.Commands.LoadoutCommands.SaveCurrentLoadout(VampireCommandFramework.ChatCommandContext,System.String)" -->
+        <!-- Badly formed XML comment ignored for member "M:CrowbaneArena.Commands.LoadoutCommands.DeleteLoadout(VampireCommandFramework.ChatCommandContext,System.String)" -->
+        <!-- Badly formed XML comment ignored for member "M:CrowbaneArena.Commands.LoadoutCommands.LoadoutInfo(VampireCommandFramework.ChatCommandContext,System.String)" -->
+        <member name="M:CrowbaneArena.Commands.LoadoutCommands.ReloadLoadouts(VampireCommandFramework.ChatCommandContext)">
+            <summary>
+            Admin command to reload loadouts from disk
+            Usage: .loadout reload
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Commands.LoadoutCommands.LoadoutStats(VampireCommandFramework.ChatCommandContext)">
+            <summary>
+            Show loadout statistics
+            Usage: .loadout stats
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Constants">
+            <summary>
+            Constants used in the CrowbaneArena mod.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Core.ArenaItem">
+            <summary>
+            A simple container for any item that has an amount.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Core.ArenaArmorSet">
+            <summary>
+            A container representing one complete armor set (boots / gloves / chest / legs).
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Core.ArenaConsumable">
+            <summary>
+            A consumable definition with a default amount.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Core.ArenaLoadout">
+            <summary>
+            Final assembled loadout that can be granted to the player on arena entry.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.ArenaZones">
+            <summary>
+            Arena zone configurations
+            Converted from arena_config.json Zones
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.ArenaZones.Zones">
+            <summary>
+            All available arena zones
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.ArenaZones.GetEnabledZones">
+            <summary>
+            Get all enabled zones
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.ArenaZones.GetDefaultZone">
+            <summary>
+            Get default zone
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.ArenaZones.TryGetZone(System.String,CrowbaneArena.Data.ArenaZones.ZoneConfig@)">
+            <summary>
+            Try to get zone by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.ArenaZones.GetZoneNames">
+            <summary>
+            Get all zone names
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.BloodTypeGUIDs">
+            <summary>
+            Maps blood type names to their corresponding PrefabGUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.BloodTypeGUIDs.GetBloodTypeGUID(System.String)">
+            <summary>
+            Gets the PrefabGUID for a blood type by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.BloodTypeGUIDs.IsValidBloodType(System.String)">
+            <summary>
+            Checks if a blood type name is valid
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.BloodTypeGUIDs.GetBloodTypes">
+            <summary>
+            Gets all available blood type names
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.BloodTypeGUIDs.BloodTypes">
+            <summary>
+            Gets all available blood type names (alias for GetBloodTypes)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.BloodTypeGUIDs.TryGetBloodType(System.String,System.Nullable{Stunlock.Core.PrefabGUID}@)">
+            <summary>
+            Try to get a blood type by name
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.Database">
+            <summary>
+            Database initialization manager for VRising automation system.
+            Initializes all data sources and services in the correct order.
+            Similar to ArenaBuilds Database class but adapted for VRising data.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Database.Initialize">
+            <summary>
+            Initialize all databases and data services.
+            Call this during plugin initialization after core services are ready.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Database.ValidateDataIntegrity">
+            <summary>
+            Validate that all required data is loaded and accessible.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Database.GetStats">
+            <summary>
+            Get database statistics for monitoring.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.IDataInitializer">
+            <summary>
+            Interface for data initializers.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.PrefabDatabase">
+            <summary>
+            Initializes prefab data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.BloodTypeDatabase">
+            <summary>
+            Initializes blood type data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.SpellSchoolDatabase">
+            <summary>
+            Initializes spell school data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.StatModDatabase">
+            <summary>
+            Initializes stat modifier data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.LoadoutDatabase">
+            <summary>
+            Initializes loadout data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.DefaultDataServiceInitializer">
+            <summary>
+            Initializes the DefaultDataService.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.DatabaseStats">
+            <summary>
+            Database statistics for monitoring.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.HardcodedLoadouts">
+            <summary>
+            Hardcoded arena loadouts - fallback when no config file exists
+            Based on VRisingArenaBuilds pattern
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.HardcodedLoadouts.GetLoadouts">
+            <summary>
+            Get all hardcoded loadouts
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.LoadoutDefinition">
+            <summary>
+            Complete loadout definition
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.WeaponDefinition">
+            <summary>
+            Weapon with mods
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.ArmorDefinition">
+            <summary>
+            Armor set definition
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.ConsumableDefinition">
+            <summary>
+            Consumable with amount
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.Loadouts">
+            <summary>
+            Complete loadout configurations for CrowbaneArena.
+            These provide balanced sets of weapons, armor, and consumables for PvP matches.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Loadouts.Warrior">
+            <summary>
+            Loadout 1: Warrior Build - Balanced tank/attacker with Chaos enhancements
+            Weapon: Storm-enchanted Greatsword for strong melee damage
+            Armor: Full Dracula Warrior set for survivability
+            Consumables: Mix of healing and empowerment potions
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Loadouts.Assassin">
+            <summary>
+            Loadout 2: Assassin Build - High mobility and glass cannon damage
+            Weapon: Illusion-enchanted Daggers for stealth and speed
+            Armor: Dracula Rogue set for mobility and utilities
+            Consumables: Speed and damage-focused potions
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Loadouts.Mage">
+            <summary>
+            Loadout 3: Mage Build - High magical damage with area control
+            Weapon: Frost-enchanted Spear for spell power and utility
+            Armor: Dracula Scholar set for magical enhancements
+            Consumables: Mana and resistance potions
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Loadouts.Brute">
+            <summary>
+            Loadout 4: Brute Build - Pure tank with devastating close-range attacks
+            Weapon: Unholy-enchanted Mace for movement speed and survivability
+            Armor: Dracula Brute set for maximum defense
+            Consumables: Survivability and burst damage potions
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Loadouts.All">
+            <summary>
+            Gets all loadouts as a list.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Loadouts.GetByNumber(System.Int32)">
+            <summary>
+            Gets a loadout by build number (1-4).
+            </summary>
+            <param name="buildNumber">Build number (1=Warrior, 2=Assassin, 3=Mage, 4=Brute).</param>
+            <returns>The corresponding loadout config, or null if invalid number.</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Loadouts.LoadoutConfig">
+            <summary>
+            Loadout configuration class for PvP setups.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.PrefabMappings">
+            <summary>
+            Comprehensive prefab mapping system for CrowbaneArena
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.PrefabMappings.GetBossMap">
+            <summary>
+            Gets a read-only dictionary of all boss names to their PrefabGUIDs
+            </summary>
+            <returns>Dictionary mapping boss names to PrefabGUIDs</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Prefabs">
+            <summary>
+            Updated from VRisingArenaBuilds repository - comprehensive prefab database
+            Central repository for VRising item prefabs used in CrowbaneArena.
+            Stores PrefabGUIDs indexed by human-readable item names for easy reference in commands.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:CrowbaneArena.Data.Prefabs.TryGetWeapon(System.String,Stunlock.Core.PrefabGUID@)" -->
+        <member name="M:CrowbaneArena.Data.Prefabs.TryGetConsumable(System.String,Stunlock.Core.PrefabGUID@)">
+            <summary>
+            Attempts to find a consumable prefab by name.
+            </summary>
+            <param name="name">The consumable name to search for.</param>
+            <param name="guid">The PrefabGUID if found.</param>
+            <returns>True if the consumable was found.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.TryGetBottoms(System.String,Stunlock.Core.PrefabGUID@)">
+            <summary>
+            Attempts to find bottoms/legs by name.
+            </summary>
+            <param name="name">The bottoms name to search for.</param>
+            <param name="guid">The PrefabGUID if found.</param>
+            <returns>True if the bottoms were found.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.TryGetSpell(System.String,Stunlock.Core.PrefabGUID@)">
+            <summary>
+            Attempts to find a spell/ability prefab by name.
+            </summary>
+            <param name="name">The spell name to search for.</param>
+            <param name="guid">The PrefabGUID if found.</param>
+            <returns>True if the spell was found.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.TryGetUnit(System.String,Stunlock.Core.PrefabGUID@)">
+            <summary>
+            Attempts to find a unit/mob prefab by name.
+            </summary>
+            <param name="name">The unit name to search for.</param>
+            <param name="guid">The PrefabGUID if found.</param>
+            <returns>True if the unit was found.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.TryGetArmorPiece(System.String,System.String,Stunlock.Core.PrefabGUID@)">
+            <summary>
+            Attempts to find an armor piece by set name and slot.
+            </summary>
+            <param name="setName">The armor set name (warrior, rogue, scholar, brute).</param>
+            <param name="slotName">The slot name (chest, legs, boots, gloves).</param>
+            <param name="guid">The PrefabGUID if found.</param>
+            <returns>True if the armor piece was found.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.GetArmorSet(System.String)">
+            <summary>
+            Gets a complete armor set by name.
+            </summary>
+            <param name="setName">The armor set name.</param>
+            <returns>Dictionary of slot -> GUID, or empty dict if not found.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.GetItemCategories">
+            <summary>
+            Gets all available item categories and their item counts.
+            </summary>
+            <returns>Dictionary of category -> item count.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.GetItemsInCategory(System.String)">
+            <summary>
+            Gets all items in a specific category as a formatted list.
+            </summary>
+            <param name="category">The category name (Weapons, ArmorSets, Consumables, etc.).</param>
+            <returns>Formatted string list of items.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Prefabs.TryGetAnyItem(System.String,Stunlock.Core.PrefabGUID@,System.String@)">
+            <summary>
+            Attempts to find any item across all categories.
+            </summary>
+            <param name="name">The item name to search for.</param>
+            <param name="guid">The PrefabGUID if found.</param>
+            <param name="category">The category where the item was found.</param>
+            <returns>True if the item was found in any category.</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.InfuseSpellMod">
+            <summary>
+            Infusion spell modifier data - compatible with ICB.core and System.Text.Json
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.InfuseSpellMod.Mods">
+            <summary>
+            List of available infusion spell modifiers
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.InfuseSpellMod.TryGetMod(System.String,CrowbaneArena.Data.Shared.InfuseSpellModInfo@)">
+            <summary>
+            Try to get infusion spell mod by name or keyword
+            </summary>
+            <param name="name">Name or keyword to search for</param>
+            <param name="mod">The found spell modifier info, or null if not found</param>
+            <returns>True if the spell modifier was found, false otherwise</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.InfuseSpellModInfo">
+            <summary>
+            Infusion spell modifier information
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.InfuseSpellModInfo.Name">
+            <summary>
+            Display name of the spell modifier
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.InfuseSpellModInfo.PrefabName">
+            <summary>
+            Prefab name for the spell modifier
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.InfuseSpellModInfo.Keywords">
+            <summary>
+            Alternative keywords/names for this spell modifier
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.InfuseSpellModInfo.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new infusion spell modifier info
+            </summary>
+            <param name="name">Display name</param>
+            <param name="prefabName">Prefab name</param>
+            <param name="keywords">Alternative keywords/names</param>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.SpellSchool">
+            <summary>
+            Spell school data and mappings
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SpellSchool.Schools">
+            <summary>
+            Spell school mappings
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.SpellSchool.TryGetSchool(CrowbaneArena.Data.Shared.SkillSchoolGuid,CrowbaneArena.Data.Shared.SchoolInfo@)">
+            <summary>
+            Try to get spell school info by GUID
+            </summary>
+            <param name="guid">School GUID to look up</param>
+            <param name="info">The found school info, or null if not found</param>
+            <returns>True if the school was found, false otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.SpellSchool.TryGetSchool(System.String,CrowbaneArena.Data.Shared.SchoolInfo@)">
+            <summary>
+            Try to get spell school info by name
+            </summary>
+            <param name="name">School name to look up</param>
+            <param name="info">The found school info, or null if not found</param>
+            <returns>True if the school was found, false otherwise</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.SkillSchoolGuid">
+            <summary>
+            Available spell school GUIDs
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Warrior">
+            <summary>Warrior school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Rogue">
+            <summary>Rogue school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Scholar">
+            <summary>Scholar school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Shadow">
+            <summary>Shadow school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Blood">
+            <summary>Blood school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Fire">
+            <summary>Fire school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Frost">
+            <summary>Frost school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Holy">
+            <summary>Holy school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Unholy">
+            <summary>Unholy school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Nature">
+            <summary>Nature school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Illusion">
+            <summary>Illusion school</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SkillSchoolGuid.Chaos">
+            <summary>Chaos school</summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.SchoolInfo">
+            <summary>
+            Spell school information
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.SchoolInfo.Name">
+            <summary>
+            Display name of the spell school
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.SchoolInfo.PrefabGuid">
+            <summary>
+            Prefab GUID for the spell school
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.SchoolInfo.#ctor(System.String,System.Int32)">
+            <summary>
+            Creates a new spell school info
+            </summary>
+            <param name="name">Display name</param>
+            <param name="prefabGuid">Prefab GUID</param>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.SpellSchoolGUIDs">
+            <summary>
+            Spell School GUIDs - compatible with ICB.core and System.Text.Json
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.SpellSchoolGUIDs.SpellSchoolInfo">
+            <summary>
+            Spell school information structure
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.SpellSchoolGUIDs.SpellSchools">
+            <summary>
+            All spell schools with their metadata
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.SpellSchoolGUIDs.TryGetSpellSchool(System.String,CrowbaneArena.Data.Shared.SpellSchoolGUIDs.SpellSchoolInfo@)">
+            <summary>
+            Try to get spell school info by name
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.StatMod">
+            <summary>
+            Stat modifier data - compatible with ICB.core and System.Text.Json
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.StatMod.Mods">
+            <summary>
+            List of available stat modifiers with their prefabs and abbreviations
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.StatMod.TryGetMod(System.String,CrowbaneArena.Data.Shared.StatModInfo@)">
+            <summary>
+            Try to get stat modifier by name or abbreviation
+            </summary>
+            <param name="nameOrAbbrev">Name or abbreviation of the stat mod</param>
+            <param name="mod">The found stat modifier info, or null if not found</param>
+            <returns>True if the stat modifier was found, false otherwise</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.StatModInfo">
+            <summary>
+            Stat modifier information
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.StatModInfo.Name">
+            <summary>
+            Display name of the stat modifier
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.StatModInfo.PrefabName">
+            <summary>
+            Prefab name for the stat modifier
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.StatModInfo.Abbreviations">
+            <summary>
+            Short codes/abbreviations used to reference this stat modifier
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.StatModInfo.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new stat modifier info
+            </summary>
+            <param name="name">Display name</param>
+            <param name="prefabName">Prefab name</param>
+            <param name="abbreviations">Short codes/abbreviations</param>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.WeaponInfo">
+            <summary>
+            Weapon data and utilities shared between CrowbaneArena and ICB.core
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponInfo.Weapons">
+            <summary>
+            Base weapon types and their prefab GUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.WeaponInfo.TryGetWeapon(CrowbaneArena.Data.Shared.WeaponType,CrowbaneArena.Data.Shared.WeaponData@)">
+            <summary>
+            Try to get weapon data by type
+            </summary>
+            <param name="type">Weapon type to look up</param>
+            <param name="data">The found weapon data, or null if not found</param>
+            <returns>True if the weapon was found, false otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.WeaponInfo.TryGetWeapon(System.String,CrowbaneArena.Data.Shared.WeaponData@)">
+            <summary>
+            Try to get weapon data by name
+            </summary>
+            <param name="name">Weapon name to look up</param>
+            <param name="data">The found weapon data, or null if not found</param>
+            <returns>True if the weapon was found, false otherwise</returns>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.WeaponType">
+            <summary>
+            Available weapon types
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Sword">
+            <summary>One-handed sword</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Axe">
+            <summary>Two-handed axe</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Spear">
+            <summary>Two-handed spear</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Slasher">
+            <summary>Dual-wielded slashers</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Crossbow">
+            <summary>Two-handed crossbow</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Mace">
+            <summary>One-handed mace</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Reaper">
+            <summary>Two-handed scythe</summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.Shared.WeaponType.Staff">
+            <summary>Two-handed staff</summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.Shared.WeaponData">
+            <summary>
+            Weapon data including name, GUID, and prefab information
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.WeaponData.Name">
+            <summary>
+            Display name of the weapon
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.WeaponData.PrefabGuid">
+            <summary>
+            GUID for the base weapon prefab
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Data.Shared.WeaponData.BasePrefabName">
+            <summary>
+            Base prefab name without variants or modifiers
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.Shared.WeaponData.#ctor(System.String,System.Int32,System.String)">
+            <summary>
+            Creates new weapon data
+            </summary>
+            <param name="name">Display name</param>
+            <param name="prefabGuid">Base prefab GUID</param>
+            <param name="basePrefabName">Base prefab name</param>
+        </member>
+        <member name="T:CrowbaneArena.Data.SpellSchoolGUIDs">
+            <summary>
+            Spell school GUIDs and mappings
+            Converted from arena_config.json GameData.SpellSchools
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.SpellSchoolGUIDs.SpellSchools">
+            <summary>
+            All spell schools with their prefixes and GUIDs
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.SpellSchoolGUIDs.PrefixToName">
+            <summary>
+            Reverse lookup by prefix
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.SpellSchoolGUIDs.TryGetSpellSchool(System.String,CrowbaneArena.Data.SpellSchoolGUIDs.SpellSchoolInfo@)">
+            <summary>
+            Try to get spell school by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.SpellSchoolGUIDs.TryGetSpellSchoolByPrefix(System.String,CrowbaneArena.Data.SpellSchoolGUIDs.SpellSchoolInfo@)">
+            <summary>
+            Try to get spell school by prefix
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.SpellSchoolGUIDs.GetGUID(System.String)">
+            <summary>
+            Get PrefabGUID for a spell school by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.SpellSchoolGUIDs.GetSpellSchools">
+            <summary>
+            Gets all available spell school names
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.StatModGUIDs">
+            <summary>
+            Stat modifier GUIDs and mappings
+            Converted from arena_config.json GameData.StatMods
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.StatModGUIDs.StatMods">
+            <summary>
+            All stat mods with their numbers and GUIDs
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.StatModGUIDs.NumberToName">
+            <summary>
+            Reverse lookup by number
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.StatModGUIDs.TryGetStatMod(System.String,CrowbaneArena.Data.StatModGUIDs.StatModInfo@)">
+            <summary>
+            Try to get stat mod by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.StatModGUIDs.TryGetStatModByNumber(System.Int32,CrowbaneArena.Data.StatModGUIDs.StatModInfo@)">
+            <summary>
+            Try to get stat mod by number
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.StatModGUIDs.GetGUID(System.String)">
+            <summary>
+            Get PrefabGUID for a stat mod by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.StatModGUIDs.ParseModCombo(System.String)">
+            <summary>
+            Parse mod combo string (e.g., "s4" = Storm + Physical Power)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.StatModGUIDs.GetStatMods">
+            <summary>
+            Gets all available stat mod names
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.VBloodGUIDs">
+            <summary>
+            Manages V Blood boss data and operations
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.VBloodGUIDs.GetAll">
+            <summary>
+            Gets all V Blood GUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.VBloodGUIDs.GetNames">
+            <summary>
+            Gets all V Blood names
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.VBloodGUIDs.GetGuid(System.String)">
+            <summary>
+            Gets the GUID for a V Blood by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.VBloodGUIDs.GetAllVBloods">
+            <summary>
+            Gets all V Blood names and their GUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.VBloodGUIDs.Exists(System.String)">
+            <summary>
+            Checks if a V Blood exists with the given name
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Data.WeaponVariants">
+            <summary>
+            Weapon variants with spell school and stat mod combinations
+            Converted from arena_config.json GameData.Weapons
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Data.WeaponVariants.Weapons">
+            <summary>
+            All weapon variants with their mod combinations
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.WeaponVariants.TryGetVariant(System.String,System.String,CrowbaneArena.Data.WeaponVariants.WeaponVariant@)">
+            <summary>
+            Try to get weapon variant by base weapon name and mod combo
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Data.WeaponVariants.GetVariants(System.String)">
+            <summary>
+            Get all variants for a weapon
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Extensions.EntityExtensions">
+            <summary>
+            Extension methods for Entity operations following KindredCommands pattern
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Helpers.ChatHelper">
+            <summary>
+            Helper for sending chat messages to players
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ChatHelper.SendSystemMessageToClient(Unity.Entities.EntityManager,ProjectM.Network.User,System.String)">
+            <summary>
+            Send a system message to a specific player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ChatHelper.SendSystemMessages(Unity.Entities.EntityManager,ProjectM.Network.User,System.String[])">
+            <summary>
+            Send multiple lines to a player
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Helpers.GuidConverter">
+            <summary>
+            Centralized utility for converting between different GUID formats and handling PrefabGUID operations
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToPrefabGUID(System.Int64)">
+            <summary>
+            Convert long to PrefabGUID
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToPrefabGUID(System.Int32)">
+            <summary>
+            Convert int to PrefabGUID
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToPrefabGUID(System.String)">
+            <summary>
+            Convert string to PrefabGUID (parses as int)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.GetGuidHash(Stunlock.Core.PrefabGUID)">
+            <summary>
+            Get GuidHash from PrefabGUID (replaces .guid usage)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToPrefabGUIDs(System.Collections.Generic.IEnumerable{System.Int64})">
+            <summary>
+            Convert collection of longs to PrefabGUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToPrefabGUIDs(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Convert collection of ints to PrefabGUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToPrefabGUIDs(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Convert collection of strings to PrefabGUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToGuidHashes(System.Collections.Generic.IEnumerable{Stunlock.Core.PrefabGUID})">
+            <summary>
+            Convert PrefabGUIDs to GuidHash collection
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.IsValid(Stunlock.Core.PrefabGUID)">
+            <summary>
+            Check if PrefabGUID is valid (non-zero)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.FilterValid(System.Collections.Generic.IEnumerable{Stunlock.Core.PrefabGUID})">
+            <summary>
+            Filter out invalid (zero) PrefabGUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.FindByGuidHash(System.Collections.Generic.IEnumerable{Stunlock.Core.PrefabGUID},System.Int32)">
+            <summary>
+            Find PrefabGUID in collection by GuidHash
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ContainsGuidHash(System.Collections.Generic.IEnumerable{Stunlock.Core.PrefabGUID},System.Int32)">
+            <summary>
+            Check if collection contains PrefabGUID with specific GuidHash
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToString(Stunlock.Core.PrefabGUID)">
+            <summary>
+            Convert PrefabGUID to string representation
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.GuidConverter.ToStrings(System.Collections.Generic.IEnumerable{Stunlock.Core.PrefabGUID})">
+            <summary>
+            Convert collection of PrefabGUIDs to string collection
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Helpers.WeaponModHelper">
+            <summary>
+            Helper class for weapon mods and variants
+            Bridges between WeaponVariants, SpellSchoolGUIDs, StatModGUIDs and game API
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetWeaponVariantGUID(System.String,System.String)">
+            <summary>
+            Get weapon variant GUID by weapon name and mod combo
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetWeaponVariantName(System.String,System.String)">
+            <summary>
+            Get weapon variant friendly name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetWeaponVariants(System.String)">
+            <summary>
+            Get all variants for a weapon
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetModGUIDs(System.String)">
+            <summary>
+            Parse mod combo and get both spell school and stat mod GUIDs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetSpellSchoolName(System.String)">
+            <summary>
+            Get spell school name from prefix
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetStatModName(System.Int32)">
+            <summary>
+            Get stat mod name from number
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.FormatModCombo(System.String)">
+            <summary>
+            Format mod combo for display (e.g., "s4" -> "Storm + Physical Power")
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetAllSpellSchools">
+            <summary>
+            Get all available spell schools
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetAllStatMods">
+            <summary>
+            Get all available stat mods
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.IsValidModCombo(System.String)">
+            <summary>
+            Validate mod combo format
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.FormatWeaponInfo(System.String)">
+            <summary>
+            Get weapon info with all variants
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.GetAllWeaponNames">
+            <summary>
+            Get all weapon names
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.WeaponModHelper.HasVariants(System.String)">
+            <summary>
+            Check if weapon has variants
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Helpers.ZoneHelper">
+            <summary>
+            Helper class for arena zone management
+            Bridges between ArenaZones data and game API
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.GetZoneSpawnLocation(System.String)">
+            <summary>
+            Get spawn location for a zone by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.GetDefaultSpawnLocation">
+            <summary>
+            Get default arena spawn location
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.GetZoneRadius(System.String)">
+            <summary>
+            Get zone radius by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.IsInZone(Unity.Mathematics.float3,System.String)">
+            <summary>
+            Check if a position is within a zone
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.IsInDefaultArena(Unity.Mathematics.float3)">
+            <summary>
+            Check if a position is within the default arena zone
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.GetEnabledZoneNames">
+            <summary>
+            Get all enabled zone names
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.GetZoneInfo(System.String)">
+            <summary>
+            Get zone info by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.TeleportToZone(Unity.Entities.Entity,System.String)">
+            <summary>
+            Teleport player to zone spawn
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.GetNearestZone(Unity.Mathematics.float3)">
+            <summary>
+            Get nearest zone to a position
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Helpers.ZoneHelper.FormatZoneInfo(System.String)">
+            <summary>
+            Format zone info for display
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Utils.Persistence">
+            <summary>
+            Handles persistent storage of configuration data using JSON files
+            Follows ICB.core pattern for consistency
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utils.Persistence.SaveToFile``1(System.String,System.String,``0)">
+            <summary>
+            Saves data to a JSON file in the BepInEx config directory
+            </summary>
+            <typeparam name="T">The type of data to save</typeparam>
+            <param name="configFolderName">Name of the config subfolder</param>
+            <param name="fileName">Name of the file to save to</param>
+            <param name="data">The data to save</param>
+        </member>
+        <member name="M:CrowbaneArena.Utils.Persistence.LoadFromFile``1(System.String,System.String)">
+            <summary>
+            Loads data from a JSON file in the BepInEx config directory
+            </summary>
+            <typeparam name="T">The type of data to load</typeparam>
+            <param name="configFolderName">Name of the config subfolder</param>
+            <param name="fileName">Name of the file to load from</param>
+            <returns>The loaded data, or a new instance if the file doesn't exist or is invalid</returns>
+        </member>
+        <member name="T:CrowbaneArena.Utils.TypeConversion">
+            <summary>
+            Provides utility methods for type conversion between different vector types and entity operations.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utils.TypeConversion.ToFloat3(UnityEngine.Vector3)">
+            <summary>
+            Converts a UnityEngine.Vector3 to Unity.Mathematics.float3.
+            </summary>
+            <param name="vec">The source Vector3 to convert</param>
+            <returns>A new float3 with the same component values</returns>
+        </member>
+        <member name="M:CrowbaneArena.Utils.TypeConversion.ToFloat3(UnityEngine.Vector2,System.Single)">
+            <summary>
+            Converts a UnityEngine.Vector2 to Unity.Mathematics.float3 with an optional Y component.
+            </summary>
+            <param name="vec">The source Vector2 to convert (XZ plane)</param>
+            <param name="y">The Y component value (default: 0)</param>
+            <returns>A new float3 with X and Z from vec, and the specified Y value</returns>
+        </member>
+        <member name="M:CrowbaneArena.Utils.TypeConversion.ToFloat3(UnityEngine.Transform)">
+            <summary>
+            Gets the position of a Transform as a float3.
+            </summary>
+            <param name="transform">The Transform to get position from</param>
+            <returns>The position as float3, or float3.zero if transform is null</returns>
+        </member>
+        <member name="M:CrowbaneArena.Utils.TypeConversion.GetUserEntity(Unity.Entities.EntityManager,Unity.Entities.Entity)">
+            <summary>
+            Gets the user entity associated with a character entity.
+            </summary>
+            <param name="em">The EntityManager to use for the query</param>
+            <param name="characterEntity">The character entity to look up</param>
+            <returns>The associated user entity, or Entity.Null if not found</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if em is null</exception>
+        </member>
+        <member name="M:CrowbaneArena.Utils.TypeConversion.GetPlatformId(Unity.Entities.EntityManager,Unity.Entities.Entity)">
+            <summary>
+            Gets the platform ID (Steam ID) for a user entity.
+            </summary>
+            <param name="em">The EntityManager to use for the query</param>
+            <param name="userEntity">The user entity to look up</param>
+            <returns>The platform ID, or 0 if not found</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if em is null</exception>
+        </member>
+        <member name="T:CrowbaneArena.Utils.Utils">
+            <summary>
+            Shared utility functions for the mod.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Utilities.PrefabConverter">
+            <summary>
+            Utility for converting and importing VRising prefab data into the CrowbaneArena system.
+            Supports importing data from various formats and adding items with single-word commands.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utilities.PrefabConverter.ImportFormats.FromSimpleDictionary(System.String)">
+            <summary>
+            Simple format: { "Name": GUID }
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utilities.PrefabConverter.ImportFormats.FromArrayFormat(System.String)">
+            <summary>
+            Array format: [{ "Name": "", "Guid": 0, "Category": "" }, ...]
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utilities.PrefabConverter.ImportFormats.FromCategoryFormat(System.String)">
+            <summary>
+            Category-based format: { "category": { "name": guid, ... }, ... }
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utilities.PrefabConverter.Commands.AddItem(System.String)">
+            <summary>
+            Single-word command to add any item: .add weapon/sword/1234567890
+            Format: .add [category]/[name]/[guid]
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utilities.PrefabConverter.Commands.ImportJson(System.String)">
+            <summary>
+            Import items from a JSON string: .import json:{...}
+            Supports multiple formats automatically detected
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Utilities.PrefabConverter.Export.ToJson">
+            <summary>
+            Export all prefabs to JSON format for backup/sharing
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Utilities.PrefabConverter.ImportItem">
+            <summary>
+            Data structure for importing items from JSON arrays
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.JsonConverters.Float2JsonConverter">
+            <summary>
+            System.Text.Json converter for Unity.Mathematics.float2
+            JSON shape: [x, y]
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ArenaController">
+            <summary>
+            Main controller for CrowbaneArena mod with enhanced progression management.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.ArenaController.Instance">
+            <summary>
+            Gets the singleton instance of the ArenaController.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.ArenaController.EntityManager">
+            <summary>
+            Gets the EntityManager instance from the current world.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.OnPlayerEnterArena(Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Handles player entering the arena with enhanced progression capture.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.OnPlayerExitArena(Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Handles player exiting the arena with enhanced progression restoration.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.GetDefaultArenaLocation">
+            <summary>
+            Get the default arena spawn location from configuration.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.IsPlayerInArena(System.UInt64)">
+            <summary>
+            Check if a player is currently in the arena.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.GetActiveSnapshotCount">
+            <summary>
+            Get the number of active arena snapshots.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.ClearAllSnapshots">
+            <summary>
+            Force clear all arena snapshots (for admin use).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.SetZoneRadius(System.Single)">
+            <summary>
+            Set arena zone radius (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.SetEntryPoint(Unity.Mathematics.float3,System.Single)">
+            <summary>
+            Set entry point location and radius (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.SetExitPoint(Unity.Mathematics.float3,System.Single)">
+            <summary>
+            Set exit point location and radius (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.SetSpawnPoint(Unity.Mathematics.float3)">
+            <summary>
+            Set arena spawn point (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.GetSpawnPoint">
+            <summary>
+            Get the spawn point position.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.IsPlayerInArena(Unity.Entities.Entity)">
+            <summary>
+            Check if player is in arena (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.GetEntryPoint">
+            <summary>
+            Get the entry point position.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.GetExitPoint">
+            <summary>
+            Get the exit point position.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaController.GetArenaStatus">
+            <summary>
+            Get current arena status (static method for commands)
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ArenaEntityConverter">
+            <summary>
+            Custom converter for Arena-specific types
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.BuildPresetConverter">
+            <summary>
+            Converter for arena build presets
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ArenaHook">
+            <summary>
+            Enhanced hook system for arena progression with integration to new services.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaHook.MarkPlayerEnteredArena">
+            <summary>
+            Marks the player as entered the arena and activates hook.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaHook.MarkPlayerExitedArena">
+            <summary>
+            Marks the player as exited the arena and deactivates hook.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaHook.CheckVBloodProgression(Unity.Entities.Entity)">
+            <summary>
+            Hook method to check V Blood progression. Returns true if in arena.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaHook.IsPlayerInArena(Unity.Entities.Entity)">
+            <summary>
+            Check if a player is currently in the arena (enhanced version).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaHook.GetActiveArenaCount">
+            <summary>
+            Get the current number of players in arena.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ArenaHook.ClearAllArenaStates">
+            <summary>
+            Force clear all arena states (admin command).
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ArenaMiddleware">
+            <summary>
+            Custom middleware for Arena-specific command handling
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.PlayerTracker">
+            <summary>
+            Tracks player positions and handles zone transitions
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.PlayerTracker.IsInitialized">
+            <summary>
+            Gets whether PlayerTracker is initialized
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.PlayerTracker.EntityManager">
+            <summary>
+            Gets the EntityManager used by PlayerTracker
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.PlayerTracker.Initialize">
+            <summary>
+            Initializes the PlayerTracker with the EntityManager from the current world
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.PlayerTracker.OnServerUpdate(ProjectM.ServerBootstrapSystem)">
+            <summary>
+            Called on each server update to track player positions
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.UIHook">
+            <summary>
+            UI hook for adding merchant buttons to prefabs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.UIHook.AddMerchantButtons">
+            <summary>
+            Add merchant buttons to the target prefab
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Validation">
+            <summary>
+            Utility for validating game data and progression.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Models.Player">
+            <summary>
+            Represents a player with user and character entities
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Models.PlayerData">
+            <summary>
+            Represents player data including user and character entity references.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Models.PlayerData.UserEntity">
+            <summary>
+            The user entity associated with this player.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Models.PlayerData.CharEntity">
+            <summary>
+            The character entity controlled by this player.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Models.PlayerData.Name">
+            <summary>
+            The player's character name.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Models.PlayerData.SteamId">
+            <summary>
+            The player's Steam ID.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Models.PlayerData.IsConnected">
+            <summary>
+            Indicates whether the player is currently connected.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Models.PlayerData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CrowbaneArena.Models.PlayerData"/> class.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Models.PlayerData.#ctor(System.String,System.UInt64,System.Boolean,Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Initializes a new instance of the <see cref="T:CrowbaneArena.Models.PlayerData"/> class.
+            </summary>
+            <param name="name">The player's character name.</param>
+            <param name="steamId">The player's Steam ID.</param>
+            <param name="isConnected">Whether the player is connected.</param>
+            <param name="userEntity">The user entity.</param>
+            <param name="characterEntity">The character entity.</param>
+        </member>
+        <member name="T:CrowbaneArena.ArenaEvent">
+            <summary>
+            Represents events in the arena system.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.BossReference">
+            <summary>
+            Reference list of all V Blood bosses in V Rising with character names and types.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Weapon">
+            <summary>
+            Legacy model classes for backward compatibility with ArenaConfigLoader
+            These are simple DTOs used for JSON deserialization
+            For actual data access, use the Data structures and Helpers
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ArenaConfig">
+            <summary>
+            Legacy ArenaConfig class for backward compatibility with ArenaConfigLoader
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ZoneLocation">
+            <summary>
+            Zone location configuration
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.PortalConfig">
+            <summary>
+            Portal configuration for zone transitions
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.GameplaySettings">
+            <summary>
+            Gameplay settings for arena configuration
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.TerritoryAlignment">
+            <summary>
+            Represents the alignment or allegiance of a territory.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.TerritoryAlignment.Friendly">
+            <summary>
+            Territory is aligned with the player or their allies.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.TerritoryAlignment.Enemy">
+            <summary>
+            Territory is controlled by hostile forces.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.TerritoryAlignment.Neutral">
+            <summary>
+            Territory has no specific alignment to any faction.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.TerritoryAlignment.None">
+            <summary>
+            Territory has not been assigned an alignment.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.PlayerInfo">
+            <summary>
+            Player information structure for performance optimization service.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ValidationResult">
+            <summary>
+            Entity validation result structure.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.WorldRegions">
+            <summary>
+            Contains mapping of world region types to their display strings.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.WorldRegions.WorldRegionToString">
+            <summary>
+            Dictionary mapping WorldRegionType enum values to their human-readable string representations.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.WorldRegions.ToString(ProjectM.Terrain.WorldRegionType)">
+            <summary>
+            Gets the long display string for the given world region type.
+            </summary>
+            <param name="region">The world region type to get the string for.</param>
+            <returns>The long display string for the region.</returns>
+        </member>
+        <member name="M:CrowbaneArena.WorldRegions.ToShortString(ProjectM.Terrain.WorldRegionType)">
+            <summary>
+            Gets the short display string for the given world region type.
+            </summary>
+            <param name="region">The world region type to get the string for.</param>
+            <returns>The short display string for the region.</returns>
+        </member>
+        <member name="M:CrowbaneArena.WorldRegions.ToStringShort(ProjectM.Terrain.WorldRegionType)">
+            <summary>
+            Extension method that gets the short display string for the world region type.
+            </summary>
+            <param name="region">The world region type to get the string for.</param>
+            <returns>The short display string for the region.</returns>
+        </member>
+        <member name="M:CrowbaneArena.WorldRegions.ToStringLong(ProjectM.Terrain.WorldRegionType)">
+            <summary>
+            Extension method that gets the long display string for the world region type.
+            </summary>
+            <param name="region">The world region type to get the string for.</param>
+            <returns>The long display string for the region.</returns>
+        </member>
+        <member name="T:CrowbaneArena.VBloodGUIDs">
+            <summary>
+            Contains GUIDs for V Blood bosses. Replaced placeholder GUIDs with unique values.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.VBloodGUIDs.GetAll">
+            <summary>
+            Gets all V Blood boss GUIDs
+            </summary>
+            <returns>A list of all V Blood boss GUIDs</returns>
+        </member>
+        <member name="T:CrowbaneArena.Patches.VBloodHookPatch">
+            <summary>
+            Runtime installer for unlock-all progression hooks using reflection.
+            Tries multiple candidate types/methods and installs Harmony prefixes that
+            return true while the player is in arena (UI-only unlocks).
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Patch">
+            <summary>
+            Harmony patches for hooking into V Rising game mechanics.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Scripts.DebugTools">
+            <summary>
+            Debugging tools for the mod.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.AbilityManager.ReplaceAbility(Unity.Entities.Entity,System.Int32,Stunlock.Core.PrefabGUID)">
+            <summary>
+            Replaces an ability in the specified slot for the given player
+            </summary>
+            <param name="playerEntity">The player entity</param>
+            <param name="slot">The ability slot to replace</param>
+            <param name="newAbility">The new ability prefab GUID</param>
+        </member>
+        <member name="M:CrowbaneArena.AbilityManager.ActivateVBloodAbility(Unity.Entities.Entity,Stunlock.Core.PrefabGUID)">
+            <summary>
+            Activates a V Blood ability for the specified player.
+            </summary>
+            <param name="playerEntity">The player entity.</param>
+            <param name="abilityPrefab">The ability prefab to activate.</param>
+        </member>
+        <member name="T:CrowbaneArena.Services.ArenaConfigurationService">
+            <summary>
+            Consolidated configuration service that manages all arena-related configurations.
+            Provides a single point of access for all configuration data.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:CrowbaneArena.Services.ArenaConfigurationService.CurrentConfig" -->
+        <member name="P:CrowbaneArena.Services.ArenaConfigurationService.IsInitialized">
+            <summary>
+            Gets whether the configuration service is initialized.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.Initialize">
+            <summary>
+            Initializes the configuration service by loading configuration files.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.ReloadConfiguration">
+            <summary>
+            Reloads the configuration from disk.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetLoadout(System.String)">
+            <summary>
+            Gets a loadout by name from the current configuration.
+            </summary>
+            <param name="loadoutName">Name of the loadout</param>
+            <returns>The loadout configuration if found, null otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetEnabledLoadouts">
+            <summary>
+            Gets all enabled loadouts.
+            </summary>
+            <returns>List of enabled loadouts</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetArenaZones">
+            <summary>
+            Gets arena zones from configuration.
+            </summary>
+            <returns>List of arena zones</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetEnabledZones">
+            <summary>
+            Gets enabled arena zones.
+            </summary>
+            <returns>List of enabled arena zones</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetDefaultZone">
+            <summary>
+            Gets the default arena zone (first enabled zone).
+            </summary>
+            <returns>The default zone if found, null otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetDefaultSpawnPoint">
+            <summary>
+            Gets the spawn point from the default zone.
+            </summary>
+            <returns>Spawn point coordinates</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.ValidateConfiguration">
+            <summary>
+            Validates the current configuration.
+            </summary>
+            <returns>Configuration validation result</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetConfigurationStats">
+            <summary>
+            Gets configuration statistics for monitoring.
+            </summary>
+            <returns>Configuration statistics</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.TryGetLoadout(System.String,CrowbaneArena.Core.ArenaLoadout@)">
+            <summary>
+            Try to get a loadout by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.TryGetWeapon(System.String,CrowbaneArena.Services.WeaponData@)">
+            <summary>
+            Try to get a weapon by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.TryGetArmorSet(System.String,CrowbaneArena.Services.ArmorData@)">
+            <summary>
+            Try to get an armor set by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.TryGetConsumable(System.String,CrowbaneArena.Services.ConsumableData@)">
+            <summary>
+            Try to get a consumable by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetLoadouts">
+            <summary>
+            Get all loadouts
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetWeapons">
+            <summary>
+            Get all weapons
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetArmorSets">
+            <summary>
+            Get all armor sets
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetConsumables">
+            <summary>
+            Get all consumables
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.SaveConfiguration">
+            <summary>
+            Save configuration (placeholder)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GenerateLoadoutJson(CrowbaneArena.Loadout)">
+            <summary>
+            Generates a JSON representation of a full loadout.
+            </summary>
+            <param name="loadout">The loadout to serialize</param>
+            <returns>JSON string representation of the loadout</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GenerateLoadoutSnapshot(CrowbaneArena.Loadout,System.UInt64)">
+            <summary>
+            Generates a snapshot of a loadout with additional metadata.
+            </summary>
+            <param name="loadout">The loadout to snapshot</param>
+            <param name="playerId">Optional player ID for context</param>
+            <returns>JSON string of the loadout snapshot</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetLoadoutWithGuids(System.String)">
+            <summary>
+            API1: Get a loadout by name with all items converted to PrefabGUID
+            </summary>
+            <param name="loadoutName">Name of the loadout to retrieve</param>
+            <returns>Loadout with PrefabGUID items or null if not found</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ArenaConfigurationService.GetAllLoadoutsWithGuids">
+            <summary>
+            API2: Get all loadouts with items converted to PrefabGUID
+            </summary>
+            <returns>List of all loadouts with PrefabGUID items</returns>
+        </member>
+        <member name="P:CrowbaneArena.Services.ArenaConfigurationService.ArenaSettings">
+            <summary>
+            Arena settings accessor for compatibility
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ArenaConfiguration">
+            <summary>
+            Configuration for arena loadouts.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.WeaponData">
+            <summary>
+            Weapon data with GUID information.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ArmorData">
+            <summary>
+            Armor set data with individual piece GUIDs.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ConsumableData">
+            <summary>
+            Consumable data with GUID and default amount.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ConfigArenaLoadout">
+            <summary>
+            Arena loadout configuration.
+            This is a simplified version for configuration purposes.
+            The actual loadout used in-game is defined in LoadoutModels.cs
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ArenaZone">
+            <summary>
+            Arena zone configuration.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Services.ArenaZone.SpawnPoint">
+            <summary>
+            Gets the spawn point as a float3.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Services.ArenaZone.EntryPoint">
+            <summary>
+            Gets the entry point as a float3.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Services.ArenaZone.ExitPoint">
+            <summary>
+            Gets the exit point as a float3.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ConfigurationValidationResult">
+            <summary>
+            Result of configuration validation.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ConfigurationStats">
+            <summary>
+            Statistics about the current configuration.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.BossService">
+            <summary>
+            Service for managing boss encounters and related functionality
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.BossService.BossInfo">
+            <summary>
+            Boss information structure
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.BossService.BossData">
+            <summary>
+            Boss data structure for configuration
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.BossService.Initialize">
+            <summary>
+            Initialize the boss service
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.BossService.InitializeBossData">
+            <summary>
+            Initialize boss data
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.BossService.DefeatBoss(System.UInt64,System.String)">
+            <summary>
+            Mark a boss as defeated for a player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.BossService.HasDefeatedBoss(System.UInt64,System.String)">
+            <summary>
+            Check if player has defeated a boss
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.BossService.GetBossInfo(System.String)">
+            <summary>
+            Get boss info by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.BossService.GetAllBosses">
+            <summary>
+            Get all bosses
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.CfgConfigParser">
+            <summary>
+            Parser for .cfg configuration files commonly used in V Rising mods
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.CfgConfigParser.ParseBossConfig(System.String)">
+            <summary>
+            Parse boss configuration from CFG file
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.CfgConfigParser.ParseCfgFile(System.String)">
+            <summary>
+            Parse a .cfg file and convert it to ArenaConfig
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.CfgConfigParser.ParseSections(System.String[])">
+            <summary>
+            Parse lines into sections and key-value pairs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.CfgConfigParser.BuildArenaConfig(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.Dictionary{System.String,System.String}})">
+            <summary>
+            Build ArenaConfig from parsed sections
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.CfgConfigParser.ConvertToArenaConfiguration(CrowbaneArena.ArenaConfig)">
+            <summary>
+            Convert ArenaConfig to ArenaConfiguration for service compatibility
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.DataPersistenceService">
+            <summary>
+            Manages all game data persistence in a single file
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DataPersistenceService.Initialize">
+            <summary>
+            Initialize the data persistence service
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DataPersistenceService.SaveData">
+            <summary>
+            Save all game data to file
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.GameData">
+            <summary>
+            Root game data container
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PersistedPlayerData">
+            <summary>
+            Player-specific data
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PersistedBossData">
+            <summary>
+            Boss-specific data
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ArenaData">
+            <summary>
+            Arena-specific data
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.DefaultDataService">
+            <summary>
+            Comprehensive default data access service that consolidates all default data sources.
+            Provides unified access to items, loadouts, configurations, and game data with automatic fallbacks.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.Initialize">
+            <summary>
+            Initialize the default data service. Call this during plugin initialization.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultWeapon(System.String,CrowbaneArena.Services.WeaponFallbackOptions)">
+            <summary>
+            Get default weapon GUID by name with fallback options.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultArmorSet(System.String)">
+            <summary>
+            Get default armor set GUIDs by name.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultConsumable(System.String)">
+            <summary>
+            Get default consumable GUID and amount.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultItem(System.String,System.String@)">
+            <summary>
+            Get any default item by name across all categories.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultLoadout(System.String)">
+            <summary>
+            Get default loadout by name with fallback.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetAllDefaultLoadouts">
+            <summary>
+            Get all available default loadouts.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.CreateMinimalLoadout">
+            <summary>
+            Create a minimal fallback loadout when no defaults are available.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultBloodType(System.String)">
+            <summary>
+            Get default blood type GUID.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultSpellSchool(System.String)">
+            <summary>
+            Get default spell school GUID.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultStatMod(System.String)">
+            <summary>
+            Get stat modifier GUID.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultArenaConfig">
+            <summary>
+            Get default arena configuration.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultHarmonyConfig">
+            <summary>
+            Get default harmony protection configuration.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.CreateMinimalArenaConfig">
+            <summary>
+            Create minimal arena config when ConfigService is not available.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.CreateDefaultProgressionSnapshot">
+            <summary>
+            Create a default progression snapshot for new players.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDefaultConsumableAmount(System.String)">
+            <summary>
+            Get default consumable amount for a given consumable name.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.TryGetWeaponAlias(System.String,Stunlock.Core.PrefabGUID@)">
+            <summary>
+            Try to get weapon GUID using common aliases.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.DefaultDataService.GetDataSummary">
+            <summary>
+            Get summary of all available default data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.WeaponFallbackOptions">
+            <summary>
+            Options for weapon fallback behavior.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.DefaultDataSummary">
+            <summary>
+            Summary of available default data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.DefaultSpawner">
+            <summary>
+            Default no-op spawner that only logs actions. Replace with a ProjectM-backed implementation to actually spawn.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.EnhancedLoggingService">
+            <summary>
+            Comprehensive logging service that provides structured logging and performance tracking.
+            Supplements the existing Plugin.Logger with additional capabilities.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.Initialize">
+            <summary>
+            Initializes the enhanced logging service.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.LogPerformance(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Logs performance metrics for an operation.
+            </summary>
+            <param name="operationName">Name of the operation</param>
+            <param name="duration">Duration of the operation in milliseconds</param>
+            <param name="metadata">Optional metadata about the operation</param>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.StartTimer(System.String)">
+            <summary>
+            Starts timing an operation.
+            </summary>
+            <param name="operationName">Name of the operation to time</param>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.StopTimer(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Stops timing an operation and logs the result.
+            </summary>
+            <param name="operationName">Name of the operation to stop timing</param>
+            <param name="metadata">Optional metadata about the operation</param>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.LogEntityValidation(Unity.Entities.Entity,CrowbaneArena.ValidationResult,System.String)">
+            <summary>
+            Logs entity validation results for debugging.
+            </summary>
+            <param name="entity">The entity being validated</param>
+            <param name="validationResult">The validation result</param>
+            <param name="context">Additional context for the validation</param>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.LogArenaStateChange(System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Logs arena state changes for debugging.
+            </summary>
+            <param name="playerName">Name of the player</param>
+            <param name="action">Action being performed (enter/exit)</param>
+            <param name="success">Whether the action was successful</param>
+            <param name="error">Optional error message</param>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.LogMemoryUsage">
+            <summary>
+            Logs memory usage statistics.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.EnhancedLoggingService.CleanupOldLogs(System.Int32)">
+            <summary>
+            Cleans up old log files to prevent disk space issues.
+            </summary>
+            <param name="maxAgeDays">Maximum age of log files in days (default: 7)</param>
+        </member>
+        <member name="T:CrowbaneArena.Services.PerformanceLogEntry">
+            <summary>
+            Log entry for performance metrics.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ArenaLogEntry">
+            <summary>
+            Log entry for arena state changes.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.MemoryLogEntry">
+            <summary>
+            Log entry for memory usage statistics.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.EntityValidationService">
+            <summary>
+            Service for validating entities and their components.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.EntityValidationService.ValidateEntity(Unity.Entities.Entity)">
+            <summary>
+            Validates an entity and returns validation result.
+            </summary>
+            <param name="entity">Entity to validate</param>
+            <returns>Validation result</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.EntityValidationService.TryGetUserFromCharacter(Unity.Entities.Entity,Unity.Entities.Entity@)">
+            <summary>
+            Tries to get user entity from character entity.
+            </summary>
+            <param name="characterEntity">Character entity</param>
+            <param name="userEntity">Output user entity</param>
+            <returns>True if successful</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.EntityValidationService.GetEntityPosition(Unity.Entities.Entity)">
+            <summary>
+            Gets entity position safely.
+            </summary>
+            <param name="entity">Entity to get position for</param>
+            <returns>Entity position or zero if not found</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.EntityValidationService.SetEntityPosition(Unity.Entities.Entity,Unity.Mathematics.float3)">
+            <summary>
+            Sets entity position safely.
+            </summary>
+            <param name="entity">Entity to set position for</param>
+            <param name="position">New position</param>
+            <returns>True if successful</returns>
+        </member>
+        <member name="T:CrowbaneArena.Services.GameConfigService">
+            <summary>
+            Manages boss data and snapshots (complements ArenaConfigurationService)
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Services.GameConfigService.Bosses">
+            <summary>
+            Gets the current boss configuration
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.Initialize">
+            <summary>
+            Initialize the service
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.ReloadBossConfig">
+            <summary>
+            Reload boss configuration from disk
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.GetAllBosses">
+            <summary>
+            Get all bosses
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.TryGetBoss(System.String,CrowbaneArena.Services.BossService.BossData@)">
+            <summary>
+            Get a boss by name (case-insensitive)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.SaveSnapshot(System.UInt64,System.String)">
+            <summary>
+            Save a player snapshot to file (deprecated - use SnapshotManager instead)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.LoadSnapshot(System.UInt64)">
+            <summary>
+            Load a player snapshot from file (deprecated - use SnapshotManager instead)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameConfigService.DeleteSnapshot(System.UInt64)">
+            <summary>
+            Delete a player snapshot (deprecated - use SnapshotManager instead)
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.BossConfig">
+            <summary>
+            Boss configuration container
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.GameSystems">
+            <summary>
+            Manages game system hooks for arena functionality
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameSystems.MarkPlayerEnteredArena(System.UInt64)">
+            <summary>
+            Mark player as entered arena - activates VBlood hook
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameSystems.MarkPlayerExitedArena(System.UInt64)">
+            <summary>
+            Mark player as exited arena - deactivates VBlood hook
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameSystems.IsPlayerInArena(System.UInt64)">
+            <summary>
+            Check if player is in arena (for VBlood hook)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameSystems.GetArenaEntryTime(System.UInt64)">
+            <summary>
+            Get arena entry time for player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.GameSystems.ClearAllArenaStates">
+            <summary>
+            Clear all arena states (admin command)
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.HarmonyProtectionService">
+            <summary>
+            Service to protect against HarmonyX type loading exceptions during assembly scanning
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.HarmonyProtectionService.InstallProtectedPatches(HarmonyLib.Harmony,System.Reflection.Assembly)">
+            <summary>
+            Install protected Harmony instance with custom patch all logic
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.HarmonyProtectionService.GetSafeTypesFromAssembly(System.Reflection.Assembly)">
+            <summary>
+            Safe assembly type loader that handles problematic assemblies
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.HarmonyProtectionService.IsProblematicType(System.Type)">
+            <summary>
+            Check if a type is known to cause problems
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.HarmonyProtectionService.GetPatchMethodsFromAssembly(System.Reflection.Assembly)">
+            <summary>
+            Get all patch methods from assembly
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.HarmonyProtectionService.LogAssemblyInfo">
+            <summary>
+            Log assembly information for debugging
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.InventoryService">
+            <summary>
+            Unified service for managing player inventory, equipment, and item spawning operations.
+            Consolidates InventoryManagementService, SpawnService, EquipmentService, and InventoryHelper.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.ClearInventory(Unity.Entities.Entity)">
+            <summary>
+            Clear all items from a character's inventory AND equipment slots
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GetInventoryItemCount(Unity.Entities.Entity)">
+            <summary>
+            Get the count of items in inventory
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GiveLoadout(Unity.Entities.Entity,Stunlock.Core.PrefabGUID[],System.Int32[])">
+            <summary>
+            Give a loadout of items to a player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GiveLoadout(Unity.Entities.Entity,System.String[],System.Int32[])">
+            <summary>
+            Give a loadout of items to a player by name
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GiveAndEquipWeapon(Unity.Entities.Entity,Stunlock.Core.PrefabGUID)">
+            <summary>
+            Give and equip a weapon to a player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GiveLoadout(Unity.Entities.Entity,System.String)">
+            <summary>
+            Give a complete loadout from configuration or hardcoded fallback
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GiveItem(Unity.Entities.Entity,System.String,System.Int32)">
+            <summary>
+            Give an item to a player (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GetAvailableItems(System.String)">
+            <summary>
+            Get available items for commands (static method)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.AddPrefab(System.String,System.String,System.Guid)">
+            <summary>
+            Add a prefab to the system (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.ImportPrefabsFromJson(System.String)">
+            <summary>
+            Import prefabs from JSON (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.ExportPrefabsToJson">
+            <summary>
+            Export prefabs to JSON (static method for commands)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.InventoryService.GiveHardcodedLoadout(Unity.Entities.Entity,System.String)">
+            <summary>
+            Give hardcoded loadout (fallback when no config exists)
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ISpawner">
+            <summary>
+            Abstraction for spawning items and equipment for players. This default interface allows
+            the service to compile without direct V Rising API calls and can be swapped with a real implementation.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.LoadoutApplicationService">
+            <summary>
+            LoadoutApplicationService: Complete loadout application including blood, weapons, armor, abilities, jewels, and passives.
+            Compatible with VRisingArenaBuilds Builds.json format.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.LoadoutFactory">
+            <summary>
+            Helper for assembling ArenaLoadout objects on-the-fly from CSV strings or name lists.
+            Consumes the dictionaries exposed by <see cref="T:CrowbaneArena.Plugin"/> (WeaponsDB, ArmorSetsDB, ConsumablesDB).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutFactory.BuildFromCsv(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Build a loadout from comma-separated weapon / armor-set / consumable lists.
+            Unknown components are skipped; warnings are logged.
+            </summary>
+            <param name="loadoutName">Display / key name.</param>
+            <param name="weaponsCsv">e.g. "sword,axe"</param>
+            <param name="armorSetsCsv">e.g. "warrior,rogue"</param>
+            <param name="consumablesCsv">e.g. "blood_rose,physical_brew"</param>
+            <param name="enabled">Whether loadout is active.</param>
+            <returns>A fully assembled ArenaLoadout.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutFactory.TryBuildFromCsv(System.String,System.String,System.String,System.String,CrowbaneArena.Core.ArenaLoadout@)">
+            <summary>
+            Try to build a loadout; returns false if no valid items were added (empty loadout).
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.LoadoutManager">
+            <summary>
+            LoadoutManager provides centralized management of loadout configurations.
+            Handles loading, saving, and managing custom loadouts alongside default ones.
+            Similar to ArenaBuilds BuildManager but adapted for VRising loadouts.
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Services.LoadoutManager.CustomLoadouts">
+            <summary>
+            Custom loadouts loaded from JSON file (case-insensitive keys)
+            </summary>
+        </member>
+        <member name="P:CrowbaneArena.Services.LoadoutManager.AllLoadouts">
+            <summary>
+            Get all available loadouts (custom + default)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.LoadData">
+            <summary>
+            Load custom loadouts from JSON file. Creates file if it doesn't exist.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.SaveData">
+            <summary>
+            Save current custom loadouts to JSON file.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.CreateDefaultLoadoutsFile">
+            <summary>
+            Create default loadouts.json file with sample loadouts.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.GetLoadoutList">
+            <summary>
+            Get formatted list of all available loadouts (custom + default).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.GetCustomLoadoutList">
+            <summary>
+            Get formatted list of only custom loadouts.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.AddOrUpdateLoadout(System.String,CrowbaneArena.Data.LoadoutDefinition)">
+            <summary>
+            Add or update a custom loadout.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.RemoveLoadout(System.String)">
+            <summary>
+            Remove a custom loadout.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.GetLoadout(System.String)">
+            <summary>
+            Get a loadout by name (checks custom first, then defaults).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.LoadoutExists(System.String)">
+            <summary>
+            Check if a loadout exists (custom or default).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutManager.GetLoadoutStats">
+            <summary>
+            Get loadout statistics.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.LoadoutService">
+            <summary>
+            LoadoutService: save, list and apply loadouts.
+            Sources:
+            - ArenaConfigurationService (CFG/JSON loadouts)
+            - JSON files: BepInEx/config/CrowbaneArena/Loadouts/{name}.json
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutService.SaveConfigLoadoutToFile(System.String,System.String)">
+            <summary>
+            Save an existing config loadout (from ArenaConfigurationService) to a JSON file.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutService.ApplyLoadout(Unity.Entities.Entity,System.String)">
+            <summary>
+            Apply a loadout to player. Priority: file loadout -> ArenaConfigurationService loadout -> LoadoutApplicationService build.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.LoadoutService.GetAvailableLoadouts">
+            <summary>
+            List all available loadouts from files, enabled config loadouts, and LoadoutApplicationService builds.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.LoggingService">
+            <summary>
+            Service for logging arena events and usage tracking.
+            Ensures the log directory exists and writes both to file and console.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PatchService">
+            <summary>
+            Service for managing patches and hooks.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PerformanceOptimizationService">
+            <summary>
+            Service for performance optimizations including entity query caching and string operation reduction.
+            Provides efficient entity queries and reduces memory allocations.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.Initialize(Unity.Entities.EntityManager)">
+            <summary>
+            Initializes the performance optimization service.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.GetCachedQuery``1">
+            <summary>
+            Gets a cached entity query for the specified component type.
+            </summary>
+            <typeparam name="T">Component type to query</typeparam>
+            <returns>Cached entity query</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.GetAllPlayerCharacters">
+            <summary>
+            Efficiently gets all player character entities with minimal allocations.
+            </summary>
+            <returns>Array of player character entities</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.GetAllConnectedUsers">
+            <summary>
+            Efficiently gets all connected user entities with minimal allocations.
+            </summary>
+            <returns>Array of connected user entities</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.FindPlayersByNameOptimized(System.String)">
+            <summary>
+            Finds players by name using optimized string comparison.
+            </summary>
+            <param name="name">Player name to search for</param>
+            <returns>Array of matching user entities</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.FindPlayerBySteamId(System.UInt64)">
+            <summary>
+            Finds players by Steam ID efficiently.
+            </summary>
+            <param name="steamId">Steam ID to search for</param>
+            <returns>The user entity if found, Entity.Null otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.GetPlayerInfoBatch(Unity.Entities.Entity[])">
+            <summary>
+            Gets player information batch for multiple entities efficiently.
+            </summary>
+            <param name="userEntities">Array of user entities</param>
+            <returns>Array of player info objects</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.ValidateEntitiesBatch(Unity.Entities.Entity[])">
+            <summary>
+            Performs optimized batch validation of entities.
+            </summary>
+            <param name="entities">Array of entities to validate</param>
+            <returns>Array of validation results</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.GetPerformanceStats">
+            <summary>
+            Gets performance statistics for the optimization service.
+            </summary>
+            <returns>Performance statistics</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.ClearCachedQueries">
+            <summary>
+            Clears all cached queries (use with caution).
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PerformanceOptimizationService.PerformMemoryCleanup">
+            <summary>
+            Performs memory cleanup and returns statistics.
+            </summary>
+            <returns>Memory cleanup statistics</returns>
+        </member>
+        <member name="T:CrowbaneArena.Services.PerformanceStats">
+            <summary>
+            Performance statistics for the optimization service.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.MemoryCleanupStats">
+            <summary>
+            Memory cleanup statistics.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PlayerService">
+            <summary>
+            Service for player management and queries with performance caching
+            Updated for V Rising 1.1+ compatibility
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetPlayerCharacter(Unity.Entities.Entity)">
+            <summary>
+            Get player character entity from user entity
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetUserFromCharacter(Unity.Entities.Entity)">
+            <summary>
+            Get user entity from character entity
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetPlayerName(Unity.Entities.Entity)">
+            <summary>
+            Get player name from user entity
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetSteamId(Unity.Entities.Entity)">
+            <summary>
+            Get player Steam ID
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.IsPlayerOnline(Unity.Entities.Entity)">
+            <summary>
+            Check if player is online
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.IsPlayerAdmin(Unity.Entities.Entity)">
+            <summary>
+            Check if player is admin
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetOnlinePlayers">
+            <summary>
+            Get all online players
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.FindUserBySteamId(System.UInt64)">
+            <summary>
+            Find user by Steam ID
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetPlayerHealth(Unity.Entities.Entity)">
+            <summary>
+            Get player health
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetPlayerPosition(Unity.Entities.Entity)">
+            <summary>
+            Get player position
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetPlayerLevel(Unity.Entities.Entity)">
+            <summary>
+            Get player level (gear level)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.SetPlayerPosition(Unity.Entities.Entity,Unity.Mathematics.float3)">
+            <summary>
+            Set player position (teleport)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.IsValidPlayerCharacter(Unity.Entities.Entity)">
+            <summary>
+            Check if entity is a valid player character
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.IsValidUser(Unity.Entities.Entity)">
+            <summary>
+            Check if entity is a valid user
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.TryFindBySteam(System.UInt64,CrowbaneArena.Models.PlayerData@)">
+            <summary>
+            Attempts to find a player by their Steam ID.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.TryFindByName(System.String,CrowbaneArena.Models.PlayerData@)">
+            <summary>
+            Attempts to find a player by their character name.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.TryFindByNetworkId(ProjectM.Network.NetworkId,CrowbaneArena.Models.PlayerData@)">
+            <summary>
+            Attempts to find a player by their network ID.
+            </summary>
+            <param name="networkId">The network ID of the player to find</param>
+            <param name="playerData">The player data if found</param>
+            <returns>True if the player was found, false otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.PlayerFromUser(ProjectM.Network.User)">
+            <summary>
+            Creates a new Player instance from the provided User.
+            </summary>
+            <param name="user">The user to create a Player for</param>
+            <returns>A new Player instance</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerService.GetCachedUsersOnlineAsPlayer">
+            <summary>
+            Get all online players (legacy method for compatibility).
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PlayerTrackerService">
+            <summary>
+            Tracks player arena data - loadouts, stats, preferences
+            Saves to playertracker.json
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.Initialize">
+            <summary>
+            Initialize tracker service
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.TrackArenaEntry(System.UInt64,System.String,System.String)">
+            <summary>
+            Track player arena entry
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.TrackLoadoutChange(System.UInt64,System.String,System.String)">
+            <summary>
+            Track loadout change
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.TrackArenaExit(System.UInt64,System.TimeSpan)">
+            <summary>
+            Track arena exit
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.GetPlayerData(System.UInt64)">
+            <summary>
+            Get player tracker data
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.GetPreferredLoadout(System.UInt64)">
+            <summary>
+            Get preferred loadout for player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.LoadTracker">
+            <summary>
+            Load tracker from JSON
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.SaveTracker">
+            <summary>
+            Save tracker to JSON
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.PlayerTrackerService.ClearAll">
+            <summary>
+            Clear all tracker data
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PlayerTrackerData">
+            <summary>
+            Player tracker data model
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressionService.OverwriteAllInMemory(Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Overwrite in-memory progression so other systems will see everything unlocked.
+            This is the "hybrid" approach: it updates runtime systems (debug events, VBlood buffers,
+            achievements, waypoints, etc.) but does not permanently change on-disk player files.
+            The original state should still be restored by calling <see cref="M:CrowbaneArena.Services.ProgressionService.RestoreSnapshot(Unity.Entities.Entity,Unity.Entities.Entity)"/>.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.PlayerProgressState">
+            <summary>
+            Defines the state of a player's progress in the arena/reset system.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Services.PlayerProgressState.PendingArenaKick">
+            <summary>
+            Player has been reset and needs to be kicked on next join to start the arena flow.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Services.PlayerProgressState.PendingArenaSpawn">
+            <summary>
+            Player has been kicked once and now needs to be spawned in the arena on next join.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Services.PlayerProgressState.InArena">
+            <summary>
+            Player is currently active in the arena with reset progress.
+            </summary>
+        </member>
+        <member name="F:CrowbaneArena.Services.PlayerProgressState.PendingRestoreKick">
+            <summary>
+            Player has exited the arena and needs to be kicked to restore their original progress.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.ProgressManagerService">
+            <summary>
+            Manages the full lifecycle of a player's progress: resetting for the arena and restoring it upon exit.
+            This service archives a player's original character bind and tracks their state through the process.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.ArchiveAndBeginReset(System.UInt64,System.String,System.String)">
+            <summary>
+            Archives a player's progress and begins the reset-to-arena process.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.BeginRestoreProcess(System.UInt64)">
+            <summary>
+            Begins the progress restoration process for a player exiting the arena.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.RestorePlayerProgress(System.UInt64)">
+            <summary>
+            Restores a player's original progress by re-binding their archived character name.
+            </summary>
+            <returns>True if progress was successfully restored.</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.GetPlayerState(System.UInt64)">
+            <summary>
+            Checks the current state of a player.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.AdvancePlayerState(System.UInt64,CrowbaneArena.Services.PlayerProgressState)">
+            <summary>
+            Advances a player to the next state in the process.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.IsInArena(System.UInt64)">
+            <summary>
+            Check if player is in arena (for command permission patch)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.GetPlayerZone(System.UInt64)">
+            <summary>
+            Get the zone a player is assigned to
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.SetPlayerZone(System.UInt64,System.String)">
+            <summary>
+            Set the zone a player is assigned to
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.ProgressManagerService.ClearPlayerZone(System.UInt64)">
+            <summary>
+            Clear zone assignment for a player
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.QueueService">
+            <summary>
+            Task execution queue for managing arena-related tasks.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.QueueService.EnqueueTask(CrowbaneArena.Services.ArenaTask)">
+            <summary>
+            Adds a task to the queue.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.SessionService">
+            <summary>
+            Service for managing user session history.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.SnapshotManager">
+            <summary>
+            Manages snapshot persistence to disk for crash-safe restore
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.Initialize">
+            <summary>
+            Initialize snapshot manager (create directory if needed)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.SaveSnapshot(System.String,CrowbaneArena.PlayerSnapshot)">
+            <summary>
+            Save a snapshot to disk (specific PlayerSnapshot overload kept for compatibility)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.SaveSnapshot``1(System.String,``0)">
+            <summary>
+            Generic save helper for any serializable object. Stores under the SnapshotDirectory base path.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.LoadSnapshot``1(System.String)">
+            <summary>
+            Load a snapshot from disk
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.DeleteSnapshot(System.String)">
+            <summary>
+            Delete a snapshot from disk
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.SnapshotExists(System.String)">
+            <summary>
+            Check if a snapshot exists
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.ClearAllSnapshots">
+            <summary>
+            Clear all snapshots
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotManager.GetSnapshotPath(System.UInt64)">
+            <summary>
+            Get snapshot file path for a player
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.SnapshotService">
+            <summary>
+            Service that provides snapshot functionality for arena management
+            This is a wrapper that delegates to SnapshotManagerService and other services
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.Initialize">
+            <summary>
+            Initialize the snapshot service
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.IsInArena(System.UInt64)">
+            <summary>
+            Check if a player is currently in the arena
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.EnterArena(Unity.Entities.Entity,Unity.Entities.Entity,Unity.Mathematics.float3,System.String)">
+            <summary>
+            Enter arena and create a snapshot
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.ExitArena(Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Exit arena and restore from snapshot
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.ClearAllSnapshots">
+            <summary>
+            Clear all snapshots
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.GetSnapshotCount">
+            <summary>
+            Get the number of active snapshots
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.HasSnapshotOnDisk(System.UInt64)">
+            <summary>
+            Check if a player has a snapshot on disk
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.GetSnapshotInfo(System.UInt64)">
+            <summary>
+            Get snapshot information for a player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.ForceCleanupAllSnapshots">
+            <summary>
+            Force cleanup all snapshots
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.ApplyArenaLoadout(Unity.Entities.Entity,System.String)">
+            <summary>
+            Apply arena loadout to a character
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.TryApplyWeaponFromData(Unity.Entities.Entity,CrowbaneArena.Services.WeaponData)">
+            <summary>
+            Try to apply weapon data to character
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.TryApplyArmorFromData(Unity.Entities.Entity,CrowbaneArena.Models.Armors)">
+            <summary>
+            Try to apply armor data to character
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.SnapshotService.TryApplyConsumableFromData(Unity.Entities.Entity,CrowbaneArena.Models.BuildItemData)">
+            <summary>
+            Try to apply consumable data to character
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.SnapshotInfo">
+            <summary>
+            Information about a player snapshot
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.TeleportService">
+            <summary>
+            Service for teleporting players
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.Teleport(Unity.Entities.Entity,Unity.Mathematics.float3,System.Boolean)">
+            <summary>
+            Teleport a character to a specific position
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.IsRestrictedPosition(Unity.Mathematics.float3)">
+            <summary>
+            Check if a position is in a restricted zone
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.TeleportUser(Unity.Entities.Entity,Unity.Mathematics.float3)">
+            <summary>
+            Teleport a user (finds character entity automatically)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.GetPosition(Unity.Entities.Entity)">
+            <summary>
+            Get current position of a character
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.TeleportToPlayer(Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Teleport character to another character
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.TeleportToUser(Unity.Entities.Entity,Unity.Entities.Entity,System.Boolean)">
+            <summary>
+            Teleport character to user (finds character's position automatically)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.TeleportToArena(Unity.Entities.Entity,System.Boolean)">
+            <summary>
+            Teleport to arena spawn point from config
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.GetArenaSpawnFromConfig">
+            <summary>
+            Get arena spawn point from configuration
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.TeleportUserToArena(Unity.Entities.Entity,System.Boolean)">
+            <summary>
+            Teleport user to arena spawn point
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.TeleportService.TeleportUserToUser(Unity.Entities.Entity,Unity.Entities.Entity)">
+            <summary>
+            Teleport user to user (both find character entities automatically)
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.VectorService">
+            <summary>
+            Service for managing vector embeddings for arena data.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Services.WeaponVariantService">
+            <summary>
+            Service for managing weapon variants and spawning items based on arena config.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.SpawnWeaponVariant(Unity.Entities.Entity,System.String,System.String,System.Int32)">
+            <summary>
+            Spawn a weapon variant for a player based on weapon name and mod combo
+            </summary>
+            <param name="player">Player entity</param>
+            <param name="weaponName">Base weapon name (e.g., "sword", "axe")</param>
+            <param name="modCombo">Mod combo string (e.g., "s123" for Storm + Movement/Attack/Spell)</param>
+            <param name="quantity">Number of weapons to spawn (default: 1)</param>
+            <returns>True if weapon was spawned successfully</returns>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.SpawnWeaponWithSpellSchool(Unity.Entities.Entity,System.String,System.String,System.Int32)">
+            <summary>
+            Spawn a weapon variant with spell school only (no stat mods)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.SpawnBaseWeapon(Unity.Entities.Entity,System.String,System.Int32)">
+            <summary>
+            Spawn a base weapon without any mods
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.GetWeaponVariantDescription(System.String,System.String)">
+            <summary>
+            Get a friendly description of a weapon variant
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.ValidateWeaponVariant(System.String,System.String,System.String@)">
+            <summary>
+            Validate if a weapon variant can be spawned
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.GetAvailableVariants(System.String)">
+            <summary>
+            Get all available variants for a weapon
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.SpawnWeaponVariants(Unity.Entities.Entity,System.Collections.Generic.List{System.ValueTuple{System.String,System.String,System.Int32}})">
+            <summary>
+            Spawn multiple weapon variants at once (for loadouts)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.SpawnArmorSet(Unity.Entities.Entity,System.String)">
+            <summary>
+            Spawn an armor set for a player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.SpawnConsumable(Unity.Entities.Entity,System.String)">
+            <summary>
+            Spawn consumables for a player
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.Services.WeaponVariantService.ApplyLoadout(Unity.Entities.Entity,System.String)">
+            <summary>
+            Apply a loadout to a player
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.APIHandler">
+            <summary>
+            Handles API requests for the mod.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.BossManager">
+            <summary>
+            Manages boss encounters, tracking, and rewards for players
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.Initialize">
+            <summary>
+            Initialize the boss manager
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.OnBossKilled(Unity.Entities.Entity,Unity.Entities.Entity,Stunlock.Core.PrefabGUID)">
+            <summary>
+            Handle boss kill event
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.SetBossTarget(System.UInt64,System.String)">
+            <summary>
+            Set a boss as the player's current target
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.GetBossTarget(System.UInt64)">
+            <summary>
+            Get the player's current boss target
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.CanFightBoss(System.UInt64,System.String)">
+            <summary>
+            Check if a player can fight a boss (cooldown, requirements, etc.)
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.SaveOriginalVBloods(Unity.Entities.Entity,System.UInt64)">
+            <summary>
+            Save player's original VBloods
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.GetVBloodPrefabs">
+            <summary>
+            Get all VBlood prefabs
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.HasVBlood(Unity.Entities.DynamicBuffer{ProjectM.VBloodConsumed},Stunlock.Core.PrefabGUID)">
+            <summary>
+            Check if player already has a specific VBlood
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.RestoreOriginalVBloods(Unity.Entities.Entity)">
+            <summary>
+            Restore player's original VBloods when leaving arena
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.SnapshotBossUnlockState(Unity.Entities.Entity)">
+            <summary>
+            Take a snapshot of the player's current boss unlock state
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.UnlockAllBosses(Unity.Entities.Entity)">
+            <summary>
+            Unlock all bosses for arena gameplay
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.BossManager.RestoreBossUnlockState(Unity.Entities.Entity)">
+            <summary>
+            Restore boss unlock state from snapshot
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.BossManager.VBloodManager">
+            <summary>
+            Get the VBlood service (placeholder for integration)
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.DataHandler">
+            <summary>
+            Utility for handling V Blood data and progression.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.ErrorHandler">
+            <summary>
+            Handles errors and exceptions in the mod.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.PlayerManager">
+            <summary>
+            Manages player states and progression.
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.PlayerManager.GetPlayerByName(System.String,System.Boolean)">
+            <summary>
+            Finds a player by their name (case-insensitive and partial matches supported)
+            </summary>
+            <param name="playerName">The name or partial name of the player to find</param>
+            <param name="includeOffline">Whether to include offline players in the search (not implemented)</param>
+            <returns>The player's character entity if found, otherwise Entity.Null</returns>
+        </member>
+        <member name="M:CrowbaneArena.ZoneManager.GetUserFromCharacter(Unity.Entities.Entity)">
+            <summary>
+            Gets the user entity from a character entity
+            </summary>
+        </member>
+        <member name="M:CrowbaneArena.ZoneManager.ManualEnterArena(Unity.Entities.Entity)">
+            <summary>
+            Manually adds a player to the arena, teleporting them to the spawn point
+            and granting them arena abilities and VBlood unlocks.
+            </summary>
+            <param name="playerEntity">The entity of the player to add to the arena</param>
+        </member>
+        <member name="M:CrowbaneArena.ZoneManager.ManualExitArena(Unity.Entities.Entity)">
+            <summary>
+            Manually removes a player from the arena, revoking their arena status.
+            </summary>
+            <param name="playerEntity">The entity of the player to remove from the arena</param>
+        </member>
+        <member name="M:CrowbaneArena.ZoneManager.IsPlayerInArena(Unity.Entities.Entity)">
+            <summary>
+            Checks if a player is currently in the arena using buff detection.
+            </summary>
+            <param name="playerEntity">The entity of the player to check</param>
+            <returns>True if the player is in the arena, false otherwise</returns>
+        </member>
+        <member name="M:CrowbaneArena.ZoneManager.GetPlayerTerritoryIndex(Unity.Entities.Entity)">
+            <summary>
+            Gets the territory index of a player in the arena grid.
+            </summary>
+            <param name="playerEntity">The entity of the player</param>
+            <returns>The territory index, or -1 if not in a valid territory</returns>
+        </member>
+        <member name="T:CrowbaneArena.Systems.ArenaLifecycleSystem">
+            <summary>
+            Central placeholder after removing GodModeSystem; may host future life-cycle helpers.
+            </summary>
+        </member>
+        <member name="T:CrowbaneArena.Systems.ArenaProximitySystem">
+            <summary>
+            Periodically checks player distance to the arena center and triggers enter/exit actions.
+            </summary>
+        </member>
+        <member name="T:VAutomationEvents.Services.IService">
+            <summary>
+            Base interface for all services
+            </summary>
+        </member>
+    </members>
+</doc>

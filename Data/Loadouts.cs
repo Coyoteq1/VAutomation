@@ -18,8 +18,11 @@ public static class Loadouts
         {
             Name = "warrior",
             Description = "Warrior Build: Storm Greatsword + Chaos Physical Power, full Warrior armor set",
-            Weapons = new List<string> { "greatsword" },
-            WeaponMods = new Dictionary<string, string> { { "greatsword", "s4" } }, // Storm Physical Power
+            Weapons = new List<string> { "greatsword_sanguine" },
+            WeaponMods = new Dictionary<string, string>
+            {
+                { "greatsword_sanguine", "storm_infusion" }
+            },
             ArmorSets = new List<string> { "warrior" },
             Consumables = new List<string>
             {
@@ -42,8 +45,11 @@ public static class Loadouts
         {
             Name = "assassin",
             Description = "Assassin Build: Illusion Daggers + Attack Speed, full Rogue armor set",
-            Weapons = new List<string> { "daggers" },
-            WeaponMods = new Dictionary<string, string> { { "daggers", "i2" } }, // Illusion Attack Speed
+            Weapons = new List<string> { "slashers_sanguine" },
+            WeaponMods = new Dictionary<string, string>
+            {
+                { "slashers_sanguine", "illusion_infusion" }
+            },
             ArmorSets = new List<string> { "rogue" },
             Consumables = new List<string>
             {
@@ -66,8 +72,11 @@ public static class Loadouts
         {
             Name = "mage",
             Description = "Mage Build: Frost Spear + Spell Power, full Scholar armor set",
-            Weapons = new List<string> { "spear" },
-            WeaponMods = new Dictionary<string, string> { { "spear", "f3" } }, // Frost Spell Power
+            Weapons = new List<string> { "spear_sanguine" },
+            WeaponMods = new Dictionary<string, string>
+            {
+                { "spear_sanguine", "frost_infusion" }
+            },
             ArmorSets = new List<string> { "scholar" },
             Consumables = new List<string>
             {
@@ -90,8 +99,11 @@ public static class Loadouts
         {
             Name = "brute",
             Description = "Brute Build: Unholy Mace + Movement Speed, full Brute armor set",
-            Weapons = new List<string> { "mace" },
-            WeaponMods = new Dictionary<string, string> { { "mace", "u1" } }, // Unholy Movement Speed
+            Weapons = new List<string> { "mace_sanguine" },
+            WeaponMods = new Dictionary<string, string>
+            {
+                { "mace_sanguine", "unholy_infusion" }
+            },
             ArmorSets = new List<string> { "brute" },
             Consumables = new List<string>
             {

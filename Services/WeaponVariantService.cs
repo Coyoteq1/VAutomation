@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ProjectM;
 using Unity.Entities;
+using CrowbaneArena.Data;
 
 namespace CrowbaneArena.Services
 {
@@ -12,6 +13,7 @@ namespace CrowbaneArena.Services
     public static class WeaponVariantService
     {
         private static readonly ISpawner Spawner = new DefaultSpawner();
+        
         /// <summary>
         /// Spawn a weapon variant for a player based on weapon name and mod combo
         /// </summary>
@@ -22,22 +24,21 @@ namespace CrowbaneArena.Services
         /// <returns>True if weapon was spawned successfully</returns>
         public static bool SpawnWeaponVariant(Entity player, string weaponName, string modCombo, int quantity = 1)
         {
-            var weapon = ArenaConfigLoader.GetWeapons().FirstOrDefault(w => w.Name.Equals(weaponName, StringComparison.OrdinalIgnoreCase));
-            if (weapon == null)
+            if (!WeaponVariants.Weapons.TryGetValue(weaponName.ToLowerInvariant(), out var weapon))
             {
-                VRisingCore.Log?.LogWarning($"Weapon '{weaponName}' not found in config.");
+                Plugin.Logger?.LogWarning($"Weapon '{weaponName}' not found in variants.");
                 return false;
             }
 
             var variant = weapon.Variants.FirstOrDefault(v => v.ModCombo.Equals(modCombo, StringComparison.OrdinalIgnoreCase));
             if (variant == null)
             {
-                VRisingCore.Log?.LogWarning($"Mod combo '{modCombo}' not found for weapon '{weaponName}'.");
+                Plugin.Logger?.LogWarning($"Mod combo '{modCombo}' not found for weapon '{weaponName}'.");
                 return false;
             }
 
-            VRisingCore.Log?.LogInfo($"Spawning weapon variant: {variant.FriendlyName} (GUID: {variant.VariantGuid}) for player {player}, quantity: {quantity}");
-            return Spawner.SpawnItem(player, (int)variant.VariantGuid, quantity);
+            Plugin.Logger?.LogInfo($"Spawning weapon variant: {variant.FriendlyName} (GUID: {variant.VariantGuid}) for player {player}, quantity: {quantity}");
+            return Spawner.SpawnItem(player, variant.VariantGuid, quantity);
         }
 
         /// <summary>
@@ -53,15 +54,14 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static bool SpawnBaseWeapon(Entity player, string weaponName, int quantity = 1)
         {
-            var weapon = ArenaConfigLoader.GetWeapons().FirstOrDefault(w => w.Name.Equals(weaponName, StringComparison.OrdinalIgnoreCase));
-            if (weapon == null)
+            if (!WeaponVariants.Weapons.TryGetValue(weaponName.ToLowerInvariant(), out var weapon))
             {
-                VRisingCore.Log?.LogWarning($"Weapon '{weaponName}' not found in config.");
+                Plugin.Logger?.LogWarning($"Weapon '{weaponName}' not found in variants.");
                 return false;
             }
 
-            VRisingCore.Log?.LogInfo($"Spawning base weapon: {weapon.Description} (GUID: {weapon.Guid}) for player {player}, quantity: {quantity}");
-            return Spawner.SpawnItem(player, (int)weapon.Guid, quantity);
+            Plugin.Logger?.LogInfo($"Spawning base weapon: {weapon.Description} (GUID: {weapon.Guid}) for player {player}, quantity: {quantity}");
+            return Spawner.SpawnItem(player, weapon.Guid, quantity);
         }
 
         /// <summary>
@@ -69,8 +69,8 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static string GetWeaponVariantDescription(string weaponName, string modCombo)
         {
-            var weapon = ArenaConfigLoader.GetWeapons().FirstOrDefault(w => w.Name.Equals(weaponName, StringComparison.OrdinalIgnoreCase));
-            if (weapon == null) return $"Unknown weapon: {weaponName}";
+            if (!WeaponVariants.Weapons.TryGetValue(weaponName.ToLowerInvariant(), out var weapon))
+                return $"Unknown weapon: {weaponName}";
 
             var variant = weapon.Variants.FirstOrDefault(v => v.ModCombo.Equals(modCombo, StringComparison.OrdinalIgnoreCase));
             if (variant != null)
@@ -85,8 +85,7 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static bool ValidateWeaponVariant(string weaponName, string modCombo, out string errorMessage)
         {
-            var weapon = ArenaConfigLoader.GetWeapons().FirstOrDefault(w => w.Name.Equals(weaponName, StringComparison.OrdinalIgnoreCase));
-            if (weapon == null)
+            if (!WeaponVariants.Weapons.TryGetValue(weaponName.ToLowerInvariant(), out var weapon))
             {
                 errorMessage = $"Weapon '{weaponName}' not found.";
                 return false;
@@ -108,8 +107,8 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static List<string> GetAvailableVariants(string weaponName)
         {
-            var weapon = ArenaConfigLoader.GetWeapons().FirstOrDefault(w => w.Name.Equals(weaponName, StringComparison.OrdinalIgnoreCase));
-            if (weapon == null) return new List<string>();
+            if (!WeaponVariants.Weapons.TryGetValue(weaponName.ToLowerInvariant(), out var weapon))
+                return new List<string>();
 
             var variants = weapon.Variants.Select(v => v.ModCombo).ToList();
             variants.Add("base"); // Base weapon
@@ -139,14 +138,14 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static bool SpawnArmorSet(Entity player, string armorSetName)
         {
-            var armorSet = ArenaConfigLoader.GetArmorSets().FirstOrDefault(a => a.Name.Equals(armorSetName, StringComparison.OrdinalIgnoreCase));
+            var armorSet = ArenaConfigurationService.GetArmorSets().FirstOrDefault(a => a.Name.Equals(armorSetName, StringComparison.OrdinalIgnoreCase));
             if (armorSet == null)
             {
-                VRisingCore.Log?.LogWarning($"Armor set '{armorSetName}' not found in config.");
+                Plugin.Logger?.LogWarning($"Armor set '{armorSetName}' not found in config.");
                 return false;
             }
 
-            VRisingCore.Log?.LogInfo($"Spawning armor set: {armorSet.Description} for player {player}");
+            Plugin.Logger?.LogInfo($"Spawning armor set: {armorSet.Description} for player {player}");
             bool ok = true;
             if (armorSet.ChestGuid != 0) ok &= Spawner.EquipArmor(player, (int)armorSet.ChestGuid);
             if (armorSet.LegsGuid != 0) ok &= Spawner.EquipArmor(player, (int)armorSet.LegsGuid);
@@ -160,15 +159,15 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static bool SpawnConsumable(Entity player, string consumableName)
         {
-            var consumable = ArenaConfigLoader.ArenaSettings.Consumables.FirstOrDefault(c => c.Name.Equals(consumableName, StringComparison.OrdinalIgnoreCase));
+            var consumable = ArenaConfigurationService.ArenaSettings.Consumables.FirstOrDefault(c => c.Name.Equals(consumableName, StringComparison.OrdinalIgnoreCase));
             if (consumable == null)
             {
-                VRisingCore.Log?.LogWarning($"Consumable '{consumableName}' not found in config.");
+                Plugin.Logger?.LogWarning($"Consumable '{consumableName}' not found in config.");
                 return false;
             }
 
             var qty = consumable.DefaultAmount > 0 ? consumable.DefaultAmount : 1;
-            VRisingCore.Log?.LogInfo($"Spawning consumable: {consumable.Name} (GUID: {consumable.Guid}) for player {player}, qty={qty}");
+            Plugin.Logger?.LogInfo($"Spawning consumable: {consumable.Name} (GUID: {consumable.Guid}) for player {player}, qty={qty}");
             return Spawner.SpawnItem(player, (int)consumable.Guid, qty);
         }
 
@@ -177,14 +176,14 @@ namespace CrowbaneArena.Services
         /// </summary>
         public static bool ApplyLoadout(Entity player, string loadoutName)
         {
-            var loadout = ArenaConfigLoader.GetLoadouts().FirstOrDefault(l => l.Name.Equals(loadoutName, StringComparison.OrdinalIgnoreCase));
+            var loadout = ArenaConfigurationService.GetLoadouts().FirstOrDefault(l => l.Name.Equals(loadoutName, StringComparison.OrdinalIgnoreCase));
             if (loadout == null)
             {
-                VRisingCore.Log?.LogWarning($"Loadout '{loadoutName}' not found in config.");
+                Plugin.Logger?.LogWarning($"Loadout '{loadoutName}' not found in config.");
                 return false;
             }
 
-            VRisingCore.Log?.LogInfo($"Applying loadout: {loadout.Description} for player {player}");
+            Plugin.Logger?.LogInfo($"Applying loadout: {loadout.Description} for player {player}");
 
             // Spawn weapons
             foreach (var weapon in loadout.Weapons)

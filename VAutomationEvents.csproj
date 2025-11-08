@@ -1,0 +1,117 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>VAutomationEvents</AssemblyName>
+    <RootNamespace>VAutomationEvents</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <OutputType>Library</OutputType>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>NU1605</WarningsNotAsErrors>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <!-- VRising/BepInEx Assembly References -->
+    <PackageReference Include="Castle.Core" Version="5.2.1" />
+    <PackageReference Include="VRising.Unhollowed.Client" Version="1.1.9.9219901" />
+    <Reference Include="Unity.Entities">
+      <HintPath>libs\Unity.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Transforms">
+      <HintPath>libs\Unity.Transforms.dll</HintPath>
+    </Reference>
+    <Reference Include="ProjectM">
+      <HintPath>libs\ProjectM.dll</HintPath>
+    </Reference>
+    <Reference Include="Stunlock.Core">
+      <HintPath>libs\Stunlock.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Stunlock.Network">
+      <HintPath>libs\Stunlock.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="Stunlock.Network.EosSdk">
+      <HintPath>libs\Stunlock.Network.EosSdk.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>libs\Unity.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>libs\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppMono.Security">
+      <HintPath>libs\Il2CppMono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>libs\Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem">
+      <HintPath>libs\Il2CppSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>libs\Il2CppInterop.Runtime.dll</HintPath>
+    </Reference>
+
+    <!-- Unity Libraries -->
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>libs\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+
+    <!-- Project References -->
+    <PackageReference Include="NUnit" Version="3.13.3" />
+
+
+
+
+
+
+    
+    <!-- <PackageReference Include="RisingV.Scripting" Version="0.1.2" /> -->
+
+    <!-- VRising Dependencies - Using VampireCommandFramework.dll -->
+    <Reference Include="VampireCommandFramework">
+      <HintPath>VampireCommandFramework.dll</HintPath>
+    </Reference>
+   
+   
+    <PackageReference Include="VRising.UnhollowedX.Client" Version="1.0.10" />
+
+    <!-- BepInEx Dependencies - Updated for stability -->
+    <PackageReference Include="BepInEx.Core" Version="6.0.0-be.738" />
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.738" Private="false" ExcludeAssets="runtime;native" />
+
+    <!-- RisingV Dependencies - REMOVED (using self-contained VBloodGUIDs.cs instead) -->
+    <!-- <PackageReference Include="RisingV.Shared" Version="0.1.3" /> -->
+    <!-- <PackageReference Include="RisingV.Core" Version="0.1.3" /> -->
+
+    <!-- Microsoft Dependencies -->
+    <PackageReference Include="Microsoft.CSharp" Version="[4.7.0, )" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="[6.0.0, )" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Explicit file compilation order to resolve dependencies -->
+    <Compile Include="Core/VRising.cs" />
+    <Compile Include="Core/Core.cs" />
+  <Compile Include="**/*.cs" Exclude="Core/VRising.cs;Core/Core.cs;temp_Bloodcraft/**/*;temp_KindredCommands/**/*;EventFrameworkApi/**/*;Tests/**/*;temp_tests/**/*;Helpers/AbilityHelper.cs;Helpers/InventoryHelper.cs;Helpers/JewelHelper.cs;Helpers/DataHelper.cs;Helpers/WeaponHelper.cs;Commands/BuildCommands.cs;Commands/WeaponCommands.cs;Commands/SnapshotCommands.cs;Commands/AutoSnapshotCommands.cs;Commands/ArenaLoadoutCommands.cs;Commands/ArenaSnapshotCommands.cs;Services/AutoSnapshotService.cs;Services/AutoEnterService.cs;Services/ConfigService.cs;Converters/UserConverter.cs;Converters/CommandContextConverter.cs;ArenaController.cs;ArenaHook.cs;ArenaMiddleware.cs" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(OutDir)$(AssemblyName).dll" DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\VRising\VRising_Server\BepInEx\plugins" />
+  </Target>
+
+</Project>

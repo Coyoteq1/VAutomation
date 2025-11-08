@@ -1,0 +1,91 @@
+# V Rising Prefab Names Reference
+# Human-readable names mapped to VRising prefab names
+# This file is used for autocomplete and reference
+
+# === WEAPONS ===
+sword
+mace  
+spear
+greatsword
+crossbow
+dagger
+daggers
+slashers
+reaper
+pistols
+longbow
+whip
+twinblades
+claws
+
+# === ARMOR SETS ===
+warrior
+rogue
+scholar
+brute
+
+# === ARMOR PIECES ===
+chest
+legs
+boots
+gloves
+cloak
+
+# === BLOOD TYPES ===
+warrior
+rogue
+scholar
+brute
+creature
+draculin
+
+# === CONSUMABLES ===
+blood_rose_potion
+exquisite_brew
+physical_brew
+spell_brew
+healing_potion
+blood_potion
+
+# === MAGIC SOURCES ===
+frost
+storm
+chaos
+unholy
+blood
+illusion
+
+# === ABILITIES ===
+veil_of_chaos
+veil_of_blood
+veil_of_storm
+veil_of_frost
+veil_of_illusion
+bat_form
+wolf_form
+rat_form
+mist_form
+
+# === BOSSES ===
+alphawolf
+keely
+rufus
+errol
+lidia
+jade
+putridrat
+goreswine
+clive
+polora
+bear
+nicholaus
+quincey
+vincent
+christina
+tristan
+wingedhorror
+ungora
+terrorclaw
+willfred
+octavian
+solarus

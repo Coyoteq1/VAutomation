@@ -2,6 +2,7 @@ using ProjectM.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Unity.Collections;
 using Unity.Entities;
 using ProjectM;
@@ -12,22 +13,227 @@ using Unity.Mathematics;
 namespace CrowbaneArena.Services;
 
 /// <summary>
-/// Service for player management and queries
+/// Service for player management and queries with performance caching
 /// Updated for V Rising 1.1+ compatibility
 /// </summary>
 public static class PlayerService
 {
     private static EntityManager EM => PlayerTracker.IsInitialized ? PlayerTracker.EntityManager : CrowbaneArenaCore.EntityManager;
 
+    #region Cache Implementation
+
+    private static readonly object _cacheLock = new();
+    private static readonly Dictionary<ulong, Entity> _steamIdToUserCache = new();
+    private static readonly Dictionary<string, Entity> _nameToUserCache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<Entity, Entity> _characterToUserCache = new();
+    private static readonly Dictionary<Entity, PlayerBasicInfo> _playerInfoCache = new();
+    private static readonly HashSet<Entity> _onlinePlayersCache = new();
+    private static DateTime _lastCacheRefresh = DateTime.MinValue;
+    private static readonly TimeSpan _cacheExpiry = TimeSpan.FromSeconds(30); // Cache expires every 30 seconds
+
+    private class PlayerBasicInfo
+    {
+        public string Name { get; set; } = "Unknown";
+        public ulong SteamId { get; set; }
+        public bool IsOnline { get; set; }
+        public bool IsAdmin { get; set; }
+        public Entity UserEntity { get; set; }
+        public Entity CharacterEntity { get; set; }
+        public DateTime LastUpdated { get; set; }
+
+        public bool IsExpired(TimeSpan expiry)
+        {
+            return DateTime.UtcNow - LastUpdated > expiry;
+        }
+    }
+
     internal static void Initialize()
     {
-        // No initialization needed - direct queries
+        try
+        {
+            lock (_cacheLock)
+            {
+                _steamIdToUserCache.Clear();
+                _nameToUserCache.Clear();
+                _characterToUserCache.Clear();
+                _playerInfoCache.Clear();
+                _onlinePlayersCache.Clear();
+                _lastCacheRefresh = DateTime.UtcNow;
+
+                Plugin.Logger?.LogInfo("PlayerService caching system initialized");
+            }
+        }
+        catch (Exception ex)
+        {
+            Plugin.Logger?.LogError($"Error initializing PlayerService cache: {ex.Message}");
+        }
     }
 
     internal static void UpdatePlayerCache(Entity userEntity, string oldName, string newName, bool forceOffline = false)
     {
-        // No caching - direct query, no update needed
+        try
+        {
+            lock (_cacheLock)
+            {
+                if (!EM.HasComponent<User>(userEntity)) return;
+
+                var user = EM.GetComponentData<User>(userEntity);
+                var steamId = user.PlatformId;
+                var name = user.CharacterName.ToString();
+
+                // Update cache entries
+                if (steamId > 0)
+                {
+                    if (user.IsConnected || forceOffline)
+                    {
+                        _steamIdToUserCache[steamId] = userEntity;
+                    }
+                    else
+                    {
+                        _steamIdToUserCache.Remove(steamId);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    if (user.IsConnected || forceOffline)
+                    {
+                        _nameToUserCache[name] = userEntity;
+                    }
+                    else
+                    {
+                        _nameToUserCache.Remove(name);
+                    }
+                }
+
+                // Update character mapping
+                var characterEntity = user.LocalCharacter._Entity;
+                if (characterEntity != Entity.Null)
+                {
+                    if (user.IsConnected || forceOffline)
+                    {
+                        _characterToUserCache[characterEntity] = userEntity;
+                    }
+                    else
+                    {
+                        _characterToUserCache.Remove(characterEntity);
+                    }
+                }
+
+                // Update player info cache
+                var info = new PlayerBasicInfo
+                {
+                    Name = name,
+                    SteamId = steamId,
+                    IsOnline = user.IsConnected,
+                    IsAdmin = user.IsAdmin,
+                    UserEntity = userEntity,
+                    CharacterEntity = characterEntity,
+                    LastUpdated = DateTime.UtcNow
+                };
+
+                if (user.IsConnected || forceOffline)
+                {
+                    _playerInfoCache[userEntity] = info;
+
+                    if (user.IsConnected)
+                    {
+                        _onlinePlayersCache.Add(userEntity);
+                    }
+                    else
+                    {
+                        _onlinePlayersCache.Remove(userEntity);
+                    }
+                }
+                else
+                {
+                    _playerInfoCache.Remove(userEntity);
+                    _onlinePlayersCache.Remove(userEntity);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Plugin.Logger?.LogError($"Error updating player cache: {ex.Message}");
+        }
     }
+
+    private static void RefreshCacheIfNeeded()
+    {
+        try
+        {
+            if (DateTime.UtcNow - _lastCacheRefresh < _cacheExpiry)
+                return;
+
+            Plugin.Logger?.LogDebug("Refreshing PlayerService cache...");
+
+            lock (_cacheLock)
+            {
+                _steamIdToUserCache.Clear();
+                _nameToUserCache.Clear();
+                _characterToUserCache.Clear();
+                _playerInfoCache.Clear();
+                _onlinePlayersCache.Clear();
+
+                var query = EM.CreateEntityQuery(ComponentType.ReadOnly<User>());
+                var userEntities = query.ToEntityArray(Allocator.Temp);
+
+                try
+                {
+                    foreach (var userEntity in userEntities)
+                    {
+                        if (EM.HasComponent<User>(userEntity))
+                        {
+                            var user = EM.GetComponentData<User>(userEntity);
+                            if (user.IsConnected)
+                            {
+                                var steamId = user.PlatformId;
+                                var name = user.CharacterName.ToString();
+                                var characterEntity = user.LocalCharacter._Entity;
+
+                                if (steamId > 0)
+                                    _steamIdToUserCache[steamId] = userEntity;
+
+                                if (!string.IsNullOrEmpty(name))
+                                    _nameToUserCache[name] = userEntity;
+
+                                if (characterEntity != Entity.Null)
+                                    _characterToUserCache[characterEntity] = userEntity;
+
+                                var info = new PlayerBasicInfo
+                                {
+                                    Name = name,
+                                    SteamId = steamId,
+                                    IsOnline = user.IsConnected,
+                                    IsAdmin = user.IsAdmin,
+                                    UserEntity = userEntity,
+                                    CharacterEntity = characterEntity,
+                                    LastUpdated = DateTime.UtcNow
+                                };
+
+                                _playerInfoCache[userEntity] = info;
+                                _onlinePlayersCache.Add(userEntity);
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    userEntities.Dispose();
+                }
+
+                _lastCacheRefresh = DateTime.UtcNow;
+            }
+
+            Plugin.Logger?.LogDebug($"PlayerService cache refreshed - {_steamIdToUserCache.Count} Steam IDs, {_nameToUserCache.Count} names, {_onlinePlayersCache.Count} online players");
+        }
+        catch (Exception ex)
+        {
+            Plugin.Logger?.LogError($"Error refreshing cache: {ex.Message}");
+        }
+    }
+
+    #endregion
 
     #region Player Queries
 
@@ -38,7 +244,25 @@ public static class PlayerService
     {
         try
         {
-            if (userEntity == Entity.Null || !EM.HasComponent<User>(userEntity))
+            if (userEntity == Entity.Null)
+                return Entity.Null;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_playerInfoCache.TryGetValue(userEntity, out var info))
+                {
+                    if (!info.IsExpired(_cacheExpiry))
+                    {
+                        return info.CharacterEntity;
+                    }
+                }
+            }
+
+            // Fallback to direct query
+            if (!EM.HasComponent<User>(userEntity))
                 return Entity.Null;
 
             var user = EM.GetComponentData<User>(userEntity);
@@ -58,7 +282,22 @@ public static class PlayerService
     {
         try
         {
-            if (characterEntity == Entity.Null || !EM.HasComponent<PlayerCharacter>(characterEntity))
+            if (characterEntity == Entity.Null)
+                return Entity.Null;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_characterToUserCache.TryGetValue(characterEntity, out var userEntity))
+                {
+                    return userEntity;
+                }
+            }
+
+            // Fallback to direct query
+            if (!EM.HasComponent<PlayerCharacter>(characterEntity))
                 return Entity.Null;
 
             var playerCharacter = EM.GetComponentData<PlayerCharacter>(characterEntity);
@@ -78,7 +317,25 @@ public static class PlayerService
     {
         try
         {
-            if (userEntity == Entity.Null || !EM.HasComponent<User>(userEntity))
+            if (userEntity == Entity.Null)
+                return "Unknown";
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_playerInfoCache.TryGetValue(userEntity, out var info))
+                {
+                    if (!info.IsExpired(_cacheExpiry))
+                    {
+                        return info.Name;
+                    }
+                }
+            }
+
+            // Fallback to direct query
+            if (!EM.HasComponent<User>(userEntity))
                 return "Unknown";
 
             var user = EM.GetComponentData<User>(userEntity);
@@ -98,7 +355,25 @@ public static class PlayerService
     {
         try
         {
-            if (userEntity == Entity.Null || !EM.HasComponent<User>(userEntity))
+            if (userEntity == Entity.Null)
+                return 0;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_playerInfoCache.TryGetValue(userEntity, out var info))
+                {
+                    if (!info.IsExpired(_cacheExpiry))
+                    {
+                        return info.SteamId;
+                    }
+                }
+            }
+
+            // Fallback to direct query
+            if (!EM.HasComponent<User>(userEntity))
                 return 0;
 
             var user = EM.GetComponentData<User>(userEntity);
@@ -118,7 +393,25 @@ public static class PlayerService
     {
         try
         {
-            if (userEntity == Entity.Null || !EM.HasComponent<User>(userEntity))
+            if (userEntity == Entity.Null)
+                return false;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_playerInfoCache.TryGetValue(userEntity, out var info))
+                {
+                    if (!info.IsExpired(_cacheExpiry))
+                    {
+                        return info.IsOnline;
+                    }
+                }
+            }
+
+            // Fallback to direct query
+            if (!EM.HasComponent<User>(userEntity))
                 return false;
 
             var user = EM.GetComponentData<User>(userEntity);
@@ -138,7 +431,25 @@ public static class PlayerService
     {
         try
         {
-            if (userEntity == Entity.Null || !EM.HasComponent<User>(userEntity))
+            if (userEntity == Entity.Null)
+                return false;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_playerInfoCache.TryGetValue(userEntity, out var info))
+                {
+                    if (!info.IsExpired(_cacheExpiry))
+                    {
+                        return info.IsAdmin;
+                    }
+                }
+            }
+
+            // Fallback to direct query
+            if (!EM.HasComponent<User>(userEntity))
                 return false;
 
             var user = EM.GetComponentData<User>(userEntity);
@@ -160,30 +471,45 @@ public static class PlayerService
 
         try
         {
-            if (EM == default)
-                return players;
+            RefreshCacheIfNeeded();
 
-            var query = EM.CreateEntityQuery(ComponentType.ReadOnly<User>());
-            var userEntities = query.ToEntityArray(Allocator.Temp);
-
-            try
+            lock (_cacheLock)
             {
-                foreach (var userEntity in userEntities)
-                {
-                    if (IsPlayerOnline(userEntity))
-                    {
-                        players.Add(userEntity);
-                    }
-                }
-            }
-            finally
-            {
-                userEntities.Dispose();
+                players.AddRange(_onlinePlayersCache);
             }
         }
         catch (Exception ex)
         {
-            Plugin.Logger?.LogError($"Error getting online players: {ex.Message}");
+            Plugin.Logger?.LogError($"Error getting online players from cache: {ex.Message}");
+
+            // Fallback to direct query
+            try
+            {
+                if (EM == default)
+                    return players;
+
+                var query = EM.CreateEntityQuery(ComponentType.ReadOnly<User>());
+                var userEntities = query.ToEntityArray(Allocator.Temp);
+
+                try
+                {
+                    foreach (var userEntity in userEntities)
+                    {
+                        if (IsPlayerOnline(userEntity))
+                        {
+                            players.Add(userEntity);
+                        }
+                    }
+                }
+                finally
+                {
+                    userEntities.Dispose();
+                }
+            }
+            catch (Exception fallbackEx)
+            {
+                Plugin.Logger?.LogError($"Error getting online players (fallback): {fallbackEx.Message}");
+            }
         }
 
         return players;
@@ -196,6 +522,21 @@ public static class PlayerService
     {
         try
         {
+            if (steamId == 0)
+                return Entity.Null;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_steamIdToUserCache.TryGetValue(steamId, out var userEntity))
+                {
+                    return userEntity;
+                }
+            }
+
+            // Fallback to direct query
             if (EM == default)
                 return Entity.Null;
 
@@ -376,6 +717,33 @@ public static class PlayerService
 
         try
         {
+            if (steamId == 0)
+                return false;
+
+            RefreshCacheIfNeeded();
+
+            // Try cache first
+            lock (_cacheLock)
+            {
+                if (_steamIdToUserCache.TryGetValue(steamId, out var userEntity))
+                {
+                    if (EM.HasComponent<User>(userEntity))
+                    {
+                        var user = EM.GetComponentData<User>(userEntity);
+                        var characterEntity = user.LocalCharacter._Entity;
+                        playerData = new PlayerData(
+                            GetPlayerName(userEntity),
+                            steamId,
+                            user.IsConnected,
+                            userEntity,
+                            characterEntity
+                        );
+                        return true;
+                    }
+                }
+            }
+
+            // Fallback to direct query
             if (EM == default)
                 return false;
 
@@ -432,6 +800,62 @@ public static class PlayerService
 
         try
         {
+            RefreshCacheIfNeeded();
+
+            // Try cache first for exact match
+            lock (_cacheLock)
+            {
+                if (_nameToUserCache.TryGetValue(name, out var exactUserEntity))
+                {
+                    if (EM.HasComponent<User>(exactUserEntity))
+                    {
+                        var user = EM.GetComponentData<User>(exactUserEntity);
+                        var characterEntity = user.LocalCharacter._Entity;
+                        playerData = new PlayerData(
+                            user.CharacterName.ToString(),
+                            user.PlatformId,
+                            user.IsConnected,
+                            exactUserEntity,
+                            characterEntity
+                        );
+                        return true;
+                    }
+                }
+            }
+
+            // Try partial match from cache
+            List<PlayerData> matchingPlayers = new();
+            lock (_cacheLock)
+            {
+                foreach (var kvp in _nameToUserCache)
+                {
+                    if (kvp.Key.ToLowerInvariant().Contains(lowerName))
+                    {
+                        var userEntity = kvp.Value;
+                        if (EM.HasComponent<User>(userEntity))
+                        {
+                            var user = EM.GetComponentData<User>(userEntity);
+                            var characterEntity = user.LocalCharacter._Entity;
+                            matchingPlayers.Add(new PlayerData(
+                                user.CharacterName.ToString(),
+                                user.PlatformId,
+                                user.IsConnected,
+                                userEntity,
+                                characterEntity
+                            ));
+                        }
+                    }
+                }
+            }
+
+            // If exactly one partial match, use it
+            if (matchingPlayers.Count == 1)
+            {
+                playerData = matchingPlayers[0];
+                return true;
+            }
+
+            // Fallback to direct query if cache miss or multiple matches
             if (EM == default)
                 return false;
 
@@ -439,7 +863,7 @@ public static class PlayerService
             var userEntities = query.ToEntityArray(Allocator.Temp);
 
             List<string> onlinePlayers = new();
-            List<PlayerData> matchingPlayers = new();
+            matchingPlayers.Clear();
 
             try
             {

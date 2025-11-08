@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qgHE2GaWdgE=",
+  "dgSpecHash": "qwjxb0+i0xQ=",
   "success": true,
-  "projectFilePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRising\\VRising_Server\\Controllers\\CrowbaneArena\\CrowbaneArena.csproj",
+  "projectFilePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRising\\VRising_Server\\Controllers\\VAutomation\\VAutomationEvents.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ahmad\\.nuget\\packages\\asmresolver\\6.0.0-beta.2\\asmresolver.6.0.0-beta.2.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\asmresolver.dotnet\\6.0.0-beta.2\\asmresolver.dotnet.6.0.0-beta.2.nupkg.sha512",
@@ -14,6 +14,7 @@
     "C:\\Users\\ahmad\\.nuget\\packages\\bepinex.core\\6.0.0-be.738\\bepinex.core.6.0.0-be.738.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\bepinex.unity.common\\6.0.0-be.738\\bepinex.unity.common.6.0.0-be.738.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\bepinex.unity.il2cpp\\6.0.0-be.738\\bepinex.unity.il2cpp.6.0.0-be.738.nupkg.sha512",
+    "C:\\Users\\ahmad\\.nuget\\packages\\castle.core\\5.2.1\\castle.core.5.2.1.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\disarm\\2022.1.0-master.57\\disarm.2022.1.0-master.57.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\harmonyx\\2.10.2\\harmonyx.2.10.2.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\iced\\1.21.0\\iced.1.21.0.nupkg.sha512",
@@ -64,6 +65,7 @@
     "C:\\Users\\ahmad\\.nuget\\packages\\system.componentmodel.typeconverter\\4.3.0\\system.componentmodel.typeconverter.4.3.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.diagnostics.debug\\4.3.0\\system.diagnostics.debug.4.3.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.3.0\\system.diagnostics.diagnosticsource.4.3.0.nupkg.sha512",
+    "C:\\Users\\ahmad\\.nuget\\packages\\system.diagnostics.eventlog\\6.0.0\\system.diagnostics.eventlog.6.0.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.diagnostics.tracing\\4.3.0\\system.diagnostics.tracing.4.3.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.globalization\\4.3.0\\system.globalization.4.3.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.globalization.calendars\\4.3.0\\system.globalization.calendars.4.3.0.nupkg.sha512",
@@ -98,17 +100,8 @@
     "C:\\Users\\ahmad\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.threading\\4.3.0\\system.threading.4.3.0.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
+    "C:\\Users\\ahmad\\.nuget\\packages\\vrising.unhollowed.client\\1.1.9.9219901\\vrising.unhollowed.client.1.1.9.9219901.nupkg.sha512",
     "C:\\Users\\ahmad\\.nuget\\packages\\vrising.unhollowedx.client\\1.0.10\\vrising.unhollowedx.client.1.0.10.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://nuget.vrisingmods.com/v3/index.json.",
-      "projectPath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRising\\VRising_Server\\Controllers\\CrowbaneArena\\CrowbaneArena.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\VRising\\VRising_Server\\Controllers\\CrowbaneArena\\CrowbaneArena.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

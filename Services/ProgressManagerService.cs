@@ -42,8 +42,8 @@ namespace CrowbaneArena.Services
         public static ProgressManagerService Instance { get; private set; }
 
         private const string StatesFileName = "PlayerProgressStates.json";
-        private const string ArchiveFileName = "ArchivedBinds.json";
         private const string ZonesFileName = "PlayerZones.json";
+        private const string ArchiveFileName = "PlayerArchivedBinds.json";
 
         private readonly List<string> _dataFiles = new() { StatesFileName, ArchiveFileName, ZonesFileName };
 
